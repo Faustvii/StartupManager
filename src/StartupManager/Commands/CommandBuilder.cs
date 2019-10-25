@@ -15,7 +15,11 @@ namespace StartupManager.Commands {
 
             listCommand.AddAlias("l");
 
-            listCommand.Handler = CommandHandler.Create(ListCommandHandler.Run);
+            var detailedOption = new Option("--detailed", "Shows additional output about the startup programs");
+            detailedOption.AddAlias("-d");
+            listCommand.AddOption(detailedOption);
+
+            listCommand.Handler = CommandHandler.Create<bool>(ListCommandHandler.Run);
 
             return listCommand;
         }

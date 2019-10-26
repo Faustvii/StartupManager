@@ -20,7 +20,7 @@ namespace StartupManager.ConsoleOutputters.ListOutput {
         private static void DetailedOutput(IEnumerable<ListPrograms> programs) {
             var tableHeaders = new [] {
                 new Header<ListPrograms>("Name", x => x.Name, x => ConsoleColor.Yellow),
-                new Header<ListPrograms>("Admin", x => x.AllUsers ? "[\u221A]" : string.Empty, x => ConsoleColor.Cyan),
+                new Header<ListPrograms>("Admin", x => x.CurrentUser ? string.Empty : "[\u221A]", x => ConsoleColor.Cyan),
                 new Header<ListPrograms>("Enabled", x => x.Disabled ? "[x]" : "[\u221A]", x => x.Disabled ? ConsoleColor.Red : ConsoleColor.DarkCyan),
                 new Header<ListPrograms>("Location", x => x.Details, x => ConsoleColor.Green),
             };

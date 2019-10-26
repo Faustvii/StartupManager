@@ -1,15 +1,32 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Win32;
 using StartupManager.Commands.StartupList;
 
 namespace StartupManager.Helpers {
     public static class RegistryHelper {
-        public static RegistryKey GetRegistryKey(ListPrograms program) {
-            if (program.AllUsers) {
-                return Registry.LocalMachine.CreateSubKey(program.RegistryPath);
-            } else {
+        public static RegistryKey GetWriteRegistryKey(ListPrograms program) {
+            if (program.CurrentUser) {
                 return Registry.CurrentUser.CreateSubKey(program.RegistryPath);
+            } else {
+                return Registry.LocalMachine.CreateSubKey(program.RegistryPath);
+            }
+        }
+
+        public static RegistryKey GetReadRegistryKey(string registryPath, bool currentUser) {
+            if (currentUser) {
+                return Registry.CurrentUser.OpenSubKey(registryPath);
+            } else {
+                return Registry.LocalMachine.OpenSubKey(registryPath);
+            }
+        }
+
+        public static IEnumerable<RegistryKey> GetReadRegistryKeys(bool currentUser, params string[] registryKeys) {
+            if (currentUser) {
+                return registryKeys.Select(x => Registry.CurrentUser.OpenSubKey(x));
+            } else {
+                return registryKeys.Select(x => Registry.LocalMachine.OpenSubKey(x));
             }
         }
 

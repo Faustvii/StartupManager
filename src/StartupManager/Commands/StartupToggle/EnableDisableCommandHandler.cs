@@ -16,7 +16,7 @@ namespace StartupManager.Commands.StartupToggle {
             }
 
             try {
-                using(var reg = RegistryHelper.GetRegistryKey(program)) {
+                using(var reg = RegistryHelper.GetWriteRegistryKey(program)) {
                     byte[] bytes;
                     if (enable) {
                         bytes = RegistryHelper.MakeEnabledBytes();

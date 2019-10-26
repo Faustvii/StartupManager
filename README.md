@@ -16,11 +16,13 @@ There are currently three functional commands `List`, `Enable`, `Disable`
 
 ### Help
 
-Examples of usage `StartupManager.exe --help` output shown below
+Examples of usage `StartupManager.exe --help`
 
 ![Help](images/help1.png)
 
-Examples of usage `StartupManager.exe list --help` output shown below
+The help command can also be used on any commands;
+
+Examples of usage `StartupManager.exe list --help`
 
 ![Help list](images/help2.png)
 

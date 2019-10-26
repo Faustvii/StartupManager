@@ -29,7 +29,7 @@ namespace StartupManager.Commands {
 
         private static Command GetDisableStartupCommand() {
             var disableCommand = new Command("disable") {
-                Description = "disables one of the current startup programs"
+                Description = "Disables one of the current startup programs"
             };
 
             disableCommand.AddAlias("d");
@@ -43,7 +43,7 @@ namespace StartupManager.Commands {
 
         private static Command GetEnableStartupCommand() {
             var disableCommand = new Command("enable") {
-                Description = "enables one of the current startup programs"
+                Description = "Enables one of the current startup programs"
             };
 
             disableCommand.AddAlias("e");

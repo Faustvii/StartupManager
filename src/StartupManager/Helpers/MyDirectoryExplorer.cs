@@ -18,5 +18,4 @@ namespace StartupManager.Helpers {
                 .SelectMany(searchPattern => Directory.EnumerateFiles(path, searchPattern, searchOption));
         }
     }
-
 }

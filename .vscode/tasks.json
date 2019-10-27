@@ -19,6 +19,8 @@
             "type": "process",
             "args": [
                 "publish",
+                "--configuration",
+                "Release",
                 "${workspaceFolder}/src/StartupManager/StartupManager.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
@@ -31,10 +33,11 @@
             "type": "process",
             "args": [
                 "watch",
-                "run",
+                "--project",
                 "${workspaceFolder}/src/StartupManager/StartupManager.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "run",
+                "l",
+                "-d",
             ],
             "problemMatcher": "$msCompile"
         }

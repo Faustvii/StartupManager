@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace StartupManager.Commands.StartupList {
     public class ListPrograms {
         public string Name { get; set; }
@@ -7,9 +9,8 @@ namespace StartupManager.Commands.StartupList {
         public string RegistryPath { get; set; }
         public string RegistryName { get; set; }
 
-        public ListPrograms(string name, string details, bool currentUser, bool disabled, string registryPath, string registryName)
-        {
-            Path = details;
+        public ListPrograms(string name, [AllowNull] string path, bool currentUser, bool disabled, string registryPath, string registryName) {
+            Path = path ?? string.Empty;
             CurrentUser = currentUser;
             Disabled = disabled;
             RegistryPath = registryPath;
@@ -17,10 +18,9 @@ namespace StartupManager.Commands.StartupList {
             Name = ParseName(name);
         }
 
-        private string ParseName(string name)
-        {
+        private string ParseName(string name) {
             var parsedName = name == string.Empty ? "(Default)" : name;
-            if(string.IsNullOrWhiteSpace(parsedName)){
+            if (string.IsNullOrWhiteSpace(parsedName)) {
                 parsedName = $"'{parsedName}'";
             }
 

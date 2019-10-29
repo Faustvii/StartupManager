@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -11,7 +10,12 @@ namespace StartupManager.Helpers.Tables {
         }
 
         public static string ToStringTable<T>(this T[] values, string[] columnHeaders, params Func<T, object>[] valueSelectors) {
-            Debug.Assert(columnHeaders.Length == valueSelectors.Length);
+            if (valueSelectors == null) {
+                throw new ArgumentNullException(nameof(valueSelectors));
+            }
+            if (columnHeaders.Length != valueSelectors.Length) {
+                throw new ArgumentException($"{nameof(columnHeaders)} and {nameof(valueSelectors)} must have same length");
+            }
 
             var arrValues = new string[values.Length + 1, valueSelectors.Length];
 
@@ -23,8 +27,13 @@ namespace StartupManager.Helpers.Tables {
             // Fill table rows
             for (int rowIndex = 1; rowIndex < arrValues.GetLength(0); rowIndex++) {
                 for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++) {
-                    arrValues[rowIndex, colIndex] = valueSelectors[colIndex]
-                        .Invoke(values[rowIndex - 1]).ToString();
+                    if (valueSelectors != null) {
+                        if (valueSelectors.Length >= colIndex) {
+                            var value = valueSelectors[colIndex]
+                                .Invoke(values[rowIndex - 1]).ToString() ?? string.Empty;
+                            arrValues[rowIndex, colIndex] = value;
+                        }
+                    }
                 }
             }
 

@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using StartupManager.ConsoleOutputters;
 using StartupManager.Helpers;
 
-namespace StartupManager.Commands.StartupList
-{
+namespace StartupManager.Commands.StartupList {
     public static class ListCommandHandler {
         private static string[] StartupRegistryPaths = new [] {
             @"Software\Microsoft\Windows\CurrentVersion\Run",
@@ -104,7 +104,7 @@ namespace StartupManager.Commands.StartupList
             }
         }
 
-        private static bool CheckIfDisabled(byte[] bytes) {
+        private static bool CheckIfDisabled([AllowNull] byte[] bytes) {
             var disabled = false;
             if (bytes != null) {
                 //If the last 8 bytes are not 0 then it's disabled

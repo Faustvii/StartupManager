@@ -8,6 +8,7 @@
     <SelfContained>false</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
     <Version>1.2.0</Version>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

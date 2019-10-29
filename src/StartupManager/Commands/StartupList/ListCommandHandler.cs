@@ -1,13 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Win32;
 using StartupManager.ConsoleOutputters;
 using StartupManager.Helpers;
 
-namespace StartupManager.Commands.StartupList {
+namespace StartupManager.Commands.StartupList
+{
     public static class ListCommandHandler {
         private static string[] StartupRegistryPaths = new [] {
             @"Software\Microsoft\Windows\CurrentVersion\Run",
@@ -66,7 +65,7 @@ namespace StartupManager.Commands.StartupList {
                         var disabled = CheckIfDisabled(bytes);
 
                         return new ListPrograms(name, path, currentUser, disabled, DisabledStartupRegistryItems, name);
-                    }).ToList();
+                    }).Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
                     programs.AddRange(startupPrograms);
                 }
             }

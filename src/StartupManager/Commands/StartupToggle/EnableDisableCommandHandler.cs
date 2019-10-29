@@ -23,10 +23,19 @@ namespace StartupManager.Commands.StartupToggle {
                     } else {
                         bytes = RegistryHelper.MakeDisabledBytes();
                     }
-                    RegistryHelper.SetBytes(reg, program.RegistryName, bytes);
 
-                    ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
-                    System.Console.WriteLine($" has been {toggleText}");
+                    var currentValue = (byte[])reg.GetValue(program.RegistryName);
+                    var isAlreadyTheRequestState = new ReadOnlySpan<byte>(bytes.Take(4).ToArray()).SequenceEqual(currentValue.Take(4).ToArray());
+
+                    if (isAlreadyTheRequestState) {
+                        ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
+                        System.Console.WriteLine($" is already {toggleText}");
+                    } else {
+                        RegistryHelper.SetBytes(reg, program.RegistryName, bytes);
+
+                        ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
+                        System.Console.WriteLine($" has been {toggleText}");
+                    }
                 }
             } catch (UnauthorizedAccessException) {
                 ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Red, $"To modify settings for ");

@@ -1,0 +1,58 @@
+name: .NET Core
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.100
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+        working-directory: ./src/StartupManager/
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.100
+
+      - name: Publish with dotnet
+        run: dotnet publish --configuration Release
+        working-directory: ./src/StartupManager/
+
+      - name: Archive Release
+        uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -jr StartupManager ./src/StartupManager/bin/Release/netcoreapp3.0/win10-x64/publish/StartupManager.exe
+          # filename: "StartupManager.zip"
+          # exclusions: "*.pdb"
+          # path: "./src/StartupManager/bin/Release/netcoreapp3.0/win10-x64/publish/"
+
+      - name: Release
+        uses: anton-yurchenko/git-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRAFT_RELEASE: "true"
+          CHANGELOG_FILE: "CHANGELOG.md"
+        with:
+          args: |
+            ./StartupManager.zip

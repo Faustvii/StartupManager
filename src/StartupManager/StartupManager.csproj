@@ -6,8 +6,7 @@
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier> 
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
-    <!-- <PublishReadyToRun>true</PublishReadyToRun> -->
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

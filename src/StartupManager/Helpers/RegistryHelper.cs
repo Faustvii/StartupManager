@@ -2,15 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Win32;
+using StartupManager.Commands.Add;
 using StartupManager.Commands.StartupList;
 
 namespace StartupManager.Helpers {
     public static class RegistryHelper {
+        private static string StartupRegistryPath => @"Software\Microsoft\Windows\CurrentVersion\Run";
+
         public static RegistryKey GetWriteRegistryKey(ListPrograms program) {
             if (program.CurrentUser) {
                 return Registry.CurrentUser.CreateSubKey(program.RegistryPath);
             } else {
                 return Registry.LocalMachine.CreateSubKey(program.RegistryPath);
+            }
+        }
+
+        public static RegistryKey GetWriteStartupRegistryKey(StartupProgram program) {
+            if (!program.AllUsers) {
+                return Registry.CurrentUser.CreateSubKey(StartupRegistryPath);
+            } else {
+                return Registry.LocalMachine.CreateSubKey(StartupRegistryPath);
             }
         }
 

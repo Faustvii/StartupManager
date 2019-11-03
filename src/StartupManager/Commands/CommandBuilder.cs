@@ -1,14 +1,18 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.IO;
+using StartupManager.Commands.Add;
 using StartupManager.Commands.StartupList;
 using StartupManager.Commands.StartupToggle;
 
-namespace StartupManager.Commands {
+namespace StartupManager.Commands
+{
     public static class CommandBuilder {
         public static RootCommand GetRootCommand() => new RootCommand {
             GetStartupListCommand(),
             GetDisableStartupCommand(),
-            GetEnableStartupCommand()
+            GetEnableStartupCommand(),
+            GetAddStartupCommand()
         };
 
         private static Command GetStartupListCommand() {
@@ -25,6 +29,24 @@ namespace StartupManager.Commands {
             listCommand.Handler = CommandHandler.Create<bool>(ListCommand.Run);
 
             return listCommand;
+        }
+
+        private static Command GetAddStartupCommand() {
+            var addCommand = new Command("add") {
+                Description = "Adds a program to startup with windows",
+            };
+
+            addCommand.AddAlias("a");
+
+            addCommand.AddArgument(new Argument<string?>("name", null));
+            addCommand.AddArgument(new Argument<FileInfo?>("path", null));
+            addCommand.AddArgument(new Argument<string?>("arguments", null));
+            addCommand.AddArgument(new Argument<bool?>("admin", null));
+            addCommand.AddArgument(new Argument<bool?>("allUsers", null));
+
+            addCommand.Handler = CommandHandler.Create<string?, FileInfo?, string?, bool?, bool?>(AddCommand.Run);
+
+            return addCommand;
         }
 
         private static Command GetDisableStartupCommand() {

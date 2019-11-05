@@ -20,27 +20,31 @@ namespace StartupManager.Commands.StartupList {
         private const string UnauthorizedMessage = "Was unable to get all startup programs (Access denied), try running as administrator";
         private static string[] StartFolderSearchPatterns = new [] { "*.exe", "*.lnk", "*.ps1", "*.cmd" };
 
-        public static IEnumerable<ListPrograms> Run(bool detailed) {
-            var startupPrograms = new List<ListPrograms>();
+        public static IEnumerable<ListProgram> Run(bool detailed) {
+            var startupPrograms = new List<ListProgram>();
 
             var registryStartups = RegistryStartupProgramsNew(detailed);
             var shellStartups = ShellStartup(detailed);
+            var taskSchedulerStartups = TaskSchedulerHelper.GetStartupTaskScheduler(false);
             if (registryStartups != null)
                 startupPrograms.AddRange(registryStartups);
 
             if (shellStartups != null)
                 startupPrograms.AddRange(shellStartups);
 
+            if (taskSchedulerStartups != null)
+                startupPrograms.AddRange(taskSchedulerStartups);
+
             return startupPrograms;
         }
 
-        private static IEnumerable<ListPrograms> RegistryStartupProgramsNew(bool detailed) {
-            var programs = new List<ListPrograms>();
+        private static IEnumerable<ListProgram> RegistryStartupProgramsNew(bool detailed) {
+            var programs = new List<ListProgram>();
             try {
-                var userStartups = GetStartupRegistry(currentUser: true);
+                var userStartups = GetStartupRegistry(allUsers: false);
                 programs.AddRange(userStartups);
 
-                var globalStartups = GetStartupRegistry(currentUser: false);
+                var globalStartups = GetStartupRegistry(allUsers: true);
                 programs.AddRange(globalStartups);
 
                 return programs;
@@ -50,10 +54,10 @@ namespace StartupManager.Commands.StartupList {
             }
         }
 
-        private static List<ListPrograms> GetStartupRegistry(bool currentUser) {
-            var programs = new List<ListPrograms>();
-            using(var disabledReg = RegistryHelper.GetReadRegistryKey(DisabledStartupRegistryItems, currentUser)) {
-                var startupRegistryKeys = RegistryHelper.GetReadRegistryKeys(currentUser, StartupRegistryPaths);
+        private static List<ListProgram> GetStartupRegistry(bool allUsers) {
+            var programs = new List<ListProgram>();
+            using(var disabledReg = RegistryHelper.GetReadRegistryKey(DisabledStartupRegistryItems, allUsers)) {
+                var startupRegistryKeys = RegistryHelper.GetReadRegistryKeys(allUsers, StartupRegistryPaths);
                 foreach (var registry in startupRegistryKeys)using(registry) {
                     if (registry == null)
                         continue;
@@ -64,7 +68,7 @@ namespace StartupManager.Commands.StartupList {
                         var bytes = disabledReg.GetValue(name)as byte[];
                         var disabled = CheckIfDisabled(bytes);
 
-                        return new ListPrograms(name, path, currentUser, disabled, DisabledStartupRegistryItems, name);
+                        return new ListProgram(name, path, requireAdministrator : allUsers, disabled, ListProgram.StartupType.Regedit, allUsers : allUsers, DisabledStartupRegistryItems, name);
                     }).Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
                     programs.AddRange(startupPrograms);
                 }
@@ -72,16 +76,16 @@ namespace StartupManager.Commands.StartupList {
             return programs;
         }
 
-        private static IEnumerable<ListPrograms> ShellStartup(bool detailed) {
-            var programs = new List<ListPrograms>();
+        private static IEnumerable<ListProgram> ShellStartup(bool detailed) {
+            var programs = new List<ListProgram>();
             try {
                 var currentUser = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
                 var allUsers = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
 
-                var currentUserStartups = GetShellStartup(currentUser: true, currentUser);
+                var currentUserStartups = GetShellStartup(allUsers: false, currentUser);
                 programs.AddRange(currentUserStartups);
 
-                var allUserStartups = GetShellStartup(currentUser: false, allUsers);
+                var allUserStartups = GetShellStartup(allUsers: true, allUsers);
                 programs.AddRange(allUserStartups);
 
                 return programs;
@@ -91,14 +95,14 @@ namespace StartupManager.Commands.StartupList {
             }
         }
 
-        private static IEnumerable<ListPrograms> GetShellStartup(bool currentUser, string path) {
-            using(var disabledReg = RegistryHelper.GetReadRegistryKey(DisabledStartupFolderItems, currentUser)) {
+        private static IEnumerable<ListProgram> GetShellStartup(bool allUsers, string path) {
+            using(var disabledReg = RegistryHelper.GetReadRegistryKey(DisabledStartupFolderItems, allUsers)) {
                 var currentStartups = MyDirectoryExplorer.GetFiles(path, StartFolderSearchPatterns).Select(name => {
                     var fileName = Path.GetFileName(name);
                     var bytes = disabledReg.GetValue(fileName)as byte[];
                     var disabled = CheckIfDisabled(bytes);
 
-                    return new ListPrograms(Path.GetFileNameWithoutExtension(name), name, currentUser, disabled, DisabledStartupFolderItems, fileName);
+                    return new ListProgram(Path.GetFileNameWithoutExtension(name), name, requireAdministrator : allUsers, disabled, ListProgram.StartupType.Shortcut, allUsers : allUsers, DisabledStartupFolderItems, fileName);
                 });
                 return currentStartups.ToList();
             }

@@ -24,7 +24,7 @@ namespace StartupManager.Commands.Add {
                 System.Console.WriteLine();
                 ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Green, "Does this look correct? y/n: ");
 
-                var correct = ConsoleStepWizard.PromptUserForBool("y", "n");
+                var correct = ConsoleStepWizard.PromptUserForBool("y", "n", "Does this look correct? y/n: ");
                 if (correct) {
                     AddStartupProgram(startupProgram);
                 } else {
@@ -48,18 +48,28 @@ namespace StartupManager.Commands.Add {
             if (programAlreadyStarts != null) {
                 ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.File.Name);
                 ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Red, " already starts with windows");
-                return;
+                Console.Write("Want to add another instance of it to startup? y/n: ");
+                var userWantsToContinue = ConsoleStepWizard.PromptUserForBool("y", "n", $"Want to add another? y/n: ");
+                if (!userWantsToContinue) {
+                    return;
+                }
             }
 
             if (program.AllUsers || program.Administrator) {
-                if (!IsElevatedHelper.IsElevated()) {
+                if (!WindowsIdentityHelper.IsElevated()) {
                     System.Console.WriteLine("This requires you run the command as administrator");
                     return;
                 }
             }
 
-            using(var registryKey = RegistryHelper.GetWriteStartupRegistryKey(program)) {
-                registryKey.SetValue(program.Name, $"\"{program.File.FullName}\" {program.Arguments}");
+            //Current user only programs requires a schedule task to run as Administrator
+            if (program.Administrator && !program.AllUsers) {
+                var taskDef = TaskSchedulerHelper.AddProgramToStartup(program);
+                TaskSchedulerHelper.RegisterTask(taskDef, program);
+            } else {
+                using(var registryKey = RegistryHelper.GetWriteStartupRegistryKey(program)) {
+                    registryKey.SetValue(program.Name, $"\"{program.File.FullName}\" {program.Arguments}");
+                }
             }
 
             Console.Write("Added ");

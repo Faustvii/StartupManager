@@ -4,7 +4,7 @@ using StartupManager.ConsoleOutputters.ListOutput;
 
 namespace StartupManager.ConsoleOutputters {
     public static class ConsoleOutputWriter {
-        public static void WriteToConsole(bool detailed, IEnumerable<ListPrograms> programs) {
+        public static void WriteToConsole(bool detailed, IEnumerable<ListProgram> programs) {
             ListCommandOutputter.WriteToConsole(detailed, programs);
         }
     }

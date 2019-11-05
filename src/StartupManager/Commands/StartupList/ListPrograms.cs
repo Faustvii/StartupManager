@@ -1,18 +1,22 @@
 using System.Diagnostics.CodeAnalysis;
 
 namespace StartupManager.Commands.StartupList {
-    public class ListPrograms {
+    public class ListProgram {
         public string Name { get; set; }
         public string Path { get; set; }
-        public bool CurrentUser { get; set; }
+        public bool RequireAdministrator { get; set; }
         public bool Disabled { get; set; }
+        public bool AllUsers { get; set; }
         public string RegistryPath { get; set; }
         public string RegistryName { get; set; }
+        public StartupType Type { get; set; }
 
-        public ListPrograms(string name, [AllowNull] string path, bool currentUser, bool disabled, string registryPath, string registryName) {
+        public ListProgram(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers, string registryPath = "", string registryName = "") {
             Path = path ?? string.Empty;
-            CurrentUser = currentUser;
+            RequireAdministrator = requireAdministrator;
             Disabled = disabled;
+            Type = type;
+            AllUsers = allUsers;
             RegistryPath = registryPath;
             RegistryName = registryName;
             Name = ParseName(name);
@@ -25,6 +29,12 @@ namespace StartupManager.Commands.StartupList {
             }
 
             return parsedName;
+        }
+
+        public enum StartupType {
+            Shortcut,
+            Regedit,
+            TaskScheduler
         }
     }
 }

@@ -6,45 +6,47 @@ using System.Linq;
 namespace StartupManager.ConsoleOutputters {
     public static class ConsoleStepWizard {
         public static IEnumerable<ConsoleStep> UserWizard(string message, IEnumerable<ConsoleStep> steps) {
-            System.Console.WriteLine(message);
+            Console.WriteLine(message);
             foreach (var step in steps) {
                 Console.Write(step.Message);
-                step.UserValue = GetValueFromUser(step.UserValue);
+                step.UserValue = GetValueFromUser(step.UserValue, step.Message);
             }
             return steps;
         }
 
-        private static object GetValueFromUser(object val) {
+        private static object GetValueFromUser(object val, string message) {
             return val
             switch {
-                FileInfo file => GetFileInfoFromUser(),
+                FileInfo file => GetFileInfoFromUser(message),
                     string stringVal => Console.ReadLine(),
-                    bool boolVal => PromptUserForBool("y", "n"),
+                    bool boolVal => PromptUserForBool("y", "n", message),
                     _ => val
             };
         }
 
-        public static FileInfo GetFileInfoFromUser() {
+        public static FileInfo GetFileInfoFromUser(string message) {
             var input = Console.ReadLine().Replace("\"", string.Empty);
             var file = new FileInfo(input);
             while (!file.Exists) {
-                System.Console.WriteLine();
-                System.Console.WriteLine("That file doesn't seem to exist, please try again");
+                Console.WriteLine();
+                ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Red, "That file doesn't seem to exist, please try again");
+                Console.Write(message);
                 input = Console.ReadLine().Replace("\"", string.Empty);;
                 file = new FileInfo(input);
             }
             return file;
         }
 
-        public static bool PromptUserForBool(string trueVal, string falseVal) {
+        public static bool PromptUserForBool(string trueVal, string falseVal, string message) {
             var validOptions = new [] { trueVal, falseVal };
             var key = Console.ReadKey().Key.ToString();
             while (!validOptions.Any(x => x.Equals(key, StringComparison.OrdinalIgnoreCase))) {
-                System.Console.WriteLine();
-                System.Console.WriteLine($"Try again '{key}' is not a valid input");
+                Console.WriteLine();
+                Console.WriteLine($"Try again '{key}' is not a valid input");
+                Console.Write(message);
                 key = Console.ReadKey().Key.ToString();
             }
-            System.Console.WriteLine();
+            Console.WriteLine();
             return key.Equals(trueVal, StringComparison.OrdinalIgnoreCase);
         }
     }

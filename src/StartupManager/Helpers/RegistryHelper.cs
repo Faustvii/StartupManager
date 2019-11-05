@@ -9,11 +9,11 @@ namespace StartupManager.Helpers {
     public static class RegistryHelper {
         private static string StartupRegistryPath => @"Software\Microsoft\Windows\CurrentVersion\Run";
 
-        public static RegistryKey GetWriteRegistryKey(ListPrograms program) {
-            if (program.CurrentUser) {
-                return Registry.CurrentUser.CreateSubKey(program.RegistryPath);
-            } else {
+        public static RegistryKey GetWriteRegistryKey(ListProgram program) {
+            if (program.AllUsers) {
                 return Registry.LocalMachine.CreateSubKey(program.RegistryPath);
+            } else {
+                return Registry.CurrentUser.CreateSubKey(program.RegistryPath);
             }
         }
 
@@ -33,11 +33,11 @@ namespace StartupManager.Helpers {
             }
         }
 
-        public static IEnumerable<RegistryKey> GetReadRegistryKeys(bool currentUser, params string[] registryKeys) {
-            if (currentUser) {
-                return registryKeys.Select(x => Registry.CurrentUser.OpenSubKey(x));
-            } else {
+        public static IEnumerable<RegistryKey> GetReadRegistryKeys(bool allUsers, params string[] registryKeys) {
+            if (allUsers) {
                 return registryKeys.Select(x => Registry.LocalMachine.OpenSubKey(x));
+            } else {
+                return registryKeys.Select(x => Registry.CurrentUser.OpenSubKey(x));
             }
         }
 

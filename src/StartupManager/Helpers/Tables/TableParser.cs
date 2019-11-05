@@ -51,12 +51,12 @@ namespace StartupManager.Helpers.Tables {
                     string cell = arrValues[rowIndex, colIndex];
                     cell = cell.PadRight(maxColumnsWidth[colIndex]);
                     if (colIndex != 0)
-                        sb.Append(" | ");
+                        sb.Append(" |-_-| ");
                     sb.Append(cell);
                 }
 
                 // Print end of line
-                sb.Append(" ");
+                sb.Append("|_-_|");
                 sb.AppendLine();
 
                 // Print splitter

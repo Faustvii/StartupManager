@@ -16,17 +16,17 @@ namespace StartupManager.Helpers.Tables {
 
         public void OutputToConsoleColored() {
             var headerNames = Headers.Select(x => x.Name);
-            var lines = RawTableString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            var lines = RawTableString.Split($"|_-_|{Environment.NewLine}", StringSplitOptions.RemoveEmptyEntries);
             for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++) {
                 var line = lines[lineIndex];
                 if (headerNames.All(x => line.Contains(x))) { //Header line skip
-                    System.Console.WriteLine(line.Replace("|", string.Empty));
+                    System.Console.WriteLine(line.Replace("|-_-|", string.Empty));
                     System.Console.WriteLine();
                     continue;
                 }
 
                 var model = Models[lineIndex - 1];
-                var content = line.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                var content = line.Split("|-_-|", StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < content.Length; i++) {
                     Console.ForegroundColor = Headers[i].ColorSelector.Invoke(model);
                     System.Console.Write(content[i]);

@@ -7,6 +7,7 @@ namespace StartupManager.ConsoleOutputters {
     public static class ConsoleStepWizard {
         public static IEnumerable<ConsoleStep> UserWizard(string message, IEnumerable<ConsoleStep> steps) {
             Console.WriteLine(message);
+            Console.WriteLine();
             foreach (var step in steps) {
                 Console.Write(step.Message);
                 step.UserValue = GetValueFromUser(step.UserValue, step.Message);

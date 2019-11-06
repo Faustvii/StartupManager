@@ -5,6 +5,8 @@ using System.Text;
 
 namespace StartupManager.Helpers.Tables {
     public static class TableParser {
+        public const string HeaderSeperator = "|-_-|";
+        public const string LineSeperator = "|_-_|";
         public static string ToStringTable<T>(this IEnumerable<T> values, string[] columnHeaders, params Func<T, object>[] valueSelectors) {
             return ToStringTable(values.ToArray(), columnHeaders, valueSelectors);
         }
@@ -42,7 +44,6 @@ namespace StartupManager.Helpers.Tables {
 
         public static string ToStringTable(this string[, ] arrValues) {
             int[] maxColumnsWidth = GetMaxColumnsWidth(arrValues);
-            var headerSpliter = Environment.NewLine; //new string('-', maxColumnsWidth.Sum(i => i + 3) - 1);
 
             var sb = new StringBuilder();
             for (int rowIndex = 0; rowIndex < arrValues.GetLength(0); rowIndex++) {
@@ -51,19 +52,12 @@ namespace StartupManager.Helpers.Tables {
                     string cell = arrValues[rowIndex, colIndex];
                     cell = cell.PadRight(maxColumnsWidth[colIndex]);
                     if (colIndex != 0)
-                        sb.Append(" |-_-| ");
+                        sb.Append($" {HeaderSeperator} ");
                     sb.Append(cell);
                 }
 
                 // Print end of line
-                sb.Append("|_-_|");
-                sb.AppendLine();
-
-                // Print splitter
-                if (rowIndex == 0) {
-                    sb.AppendFormat("{0}", headerSpliter);
-                    sb.AppendLine();
-                }
+                sb.Append(LineSeperator);
             }
 
             return sb.ToString();

@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- List output had too many newlines as seperator between header.
+- #7 Documentation has been updated
+
 ## [1.3.0] - 2019-11-05
 
 It's now finally possible to add programs to startup

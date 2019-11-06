@@ -5,8 +5,7 @@ using StartupManager.Commands.Add;
 using StartupManager.Commands.StartupList;
 using StartupManager.Commands.StartupToggle;
 
-namespace StartupManager.Commands
-{
+namespace StartupManager.Commands {
     public static class CommandBuilder {
         public static RootCommand GetRootCommand() => new RootCommand {
             GetStartupListCommand(),
@@ -51,7 +50,7 @@ namespace StartupManager.Commands
 
         private static Command GetDisableStartupCommand() {
             var disableCommand = new Command("disable") {
-                Description = "Disables one of the current startup programs"
+                Description = "Disables one of the current startup programs",
             };
 
             disableCommand.AddAlias("d");

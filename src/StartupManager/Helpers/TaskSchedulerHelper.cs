@@ -1,13 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Win32.TaskScheduler;
 using StartupManager.Commands.Add;
 using StartupManager.Commands.StartupList;
 
 namespace StartupManager.Helpers {
     public static class TaskSchedulerHelper {
+
+        public static void RemoveProgramFromStartup(string name) {
+            using(var taskService = new TaskService()) {
+                var task = taskService.FindTask(name);
+                taskService.RootFolder.DeleteTask(task.Path);
+            }
+        }
+
         public static TaskDefinition AddProgramToStartup(StartupProgram program) {
             using(var taskService = new TaskService()) {
                 var taskDef = taskService.NewTask();
@@ -65,7 +72,6 @@ namespace StartupManager.Helpers {
                 return new Predicate<Task>(x => x.Definition.Triggers.Any(x => x.TriggerType == TaskTriggerType.Logon) && x.Definition.RegistrationInfo.Author != "Microsoft Corporation" && !x.Path.Contains(@"\Microsoft\"));
             }
         }
-
         public static Task RegisterTask(TaskDefinition taskDef, StartupProgram program) {
             using(var taskService = new TaskService()) {
                 return taskService.RootFolder.RegisterTaskDefinition($"StartupManager\\{program.Name}", taskDef);

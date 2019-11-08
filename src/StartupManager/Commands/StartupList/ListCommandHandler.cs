@@ -68,7 +68,7 @@ namespace StartupManager.Commands.StartupList {
                         var bytes = disabledReg.GetValue(name)as byte[];
                         var disabled = CheckIfDisabled(bytes);
 
-                        return new ListProgram(name, path, requireAdministrator : allUsers, disabled, ListProgram.StartupType.Regedit, allUsers : allUsers, DisabledStartupRegistryItems, name);
+                        return new ListProgram(name, path, requireAdministrator : allUsers, disabled, ListProgram.StartupType.Regedit, allUsers : allUsers, StartupRegistryPaths.First(x => registry.Name.Contains(x)), DisabledStartupRegistryItems, name);
                     }).Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
                     programs.AddRange(startupPrograms);
                 }
@@ -102,7 +102,7 @@ namespace StartupManager.Commands.StartupList {
                     var bytes = disabledReg.GetValue(fileName)as byte[];
                     var disabled = CheckIfDisabled(bytes);
 
-                    return new ListProgram(Path.GetFileNameWithoutExtension(name), name, requireAdministrator : allUsers, disabled, ListProgram.StartupType.Shortcut, allUsers : allUsers, DisabledStartupFolderItems, fileName);
+                    return new ListProgram(Path.GetFileNameWithoutExtension(name), name, requireAdministrator : allUsers, disabled, ListProgram.StartupType.Shortcut, allUsers : allUsers, disabledRegistryPath : DisabledStartupFolderItems, registryName : fileName);
                 });
                 return currentStartups.ToList();
             }

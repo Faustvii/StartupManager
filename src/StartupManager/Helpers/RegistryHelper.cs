@@ -9,19 +9,19 @@ namespace StartupManager.Helpers {
     public static class RegistryHelper {
         private static string StartupRegistryPath => @"Software\Microsoft\Windows\CurrentVersion\Run";
 
-        public static RegistryKey GetWriteRegistryKey(ListProgram program) {
-            if (program.AllUsers) {
-                return Registry.LocalMachine.CreateSubKey(program.RegistryPath);
+        public static RegistryKey GetWriteRegistryKey(string registryPath, bool allUsers) {
+            if (allUsers) {
+                return Registry.LocalMachine.CreateSubKey(registryPath);
             } else {
-                return Registry.CurrentUser.CreateSubKey(program.RegistryPath);
+                return Registry.CurrentUser.CreateSubKey(registryPath);
             }
         }
 
         public static RegistryKey GetWriteStartupRegistryKey(StartupProgram program) {
-            if (!program.AllUsers) {
-                return Registry.CurrentUser.CreateSubKey(StartupRegistryPath);
-            } else {
+            if (program.AllUsers) {
                 return Registry.LocalMachine.CreateSubKey(StartupRegistryPath);
+            } else {
+                return Registry.CurrentUser.CreateSubKey(StartupRegistryPath);
             }
         }
 
@@ -30,6 +30,12 @@ namespace StartupManager.Helpers {
                 return Registry.CurrentUser.OpenSubKey(registryPath);
             } else {
                 return Registry.LocalMachine.OpenSubKey(registryPath);
+            }
+        }
+
+        public static void DeleteRegistryKey(ListProgram program) {
+            using(var key = GetWriteRegistryKey(program.RegistryPath, program.AllUsers)) {
+                key.DeleteValue(program.RegistryName);
             }
         }
 

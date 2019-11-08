@@ -2,6 +2,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO;
 using StartupManager.Commands.Add;
+using StartupManager.Commands.Remove;
 using StartupManager.Commands.StartupList;
 using StartupManager.Commands.StartupToggle;
 
@@ -11,7 +12,8 @@ namespace StartupManager.Commands {
             GetStartupListCommand(),
             GetDisableStartupCommand(),
             GetEnableStartupCommand(),
-            GetAddStartupCommand()
+            GetAddStartupCommand(),
+            GetRemoveStartupCommand()
         };
 
         private static Command GetStartupListCommand() {
@@ -46,6 +48,24 @@ namespace StartupManager.Commands {
             addCommand.Handler = CommandHandler.Create<string?, FileInfo?, string?, bool?, bool?>(AddCommand.Run);
 
             return addCommand;
+        }
+
+        private static Command GetRemoveStartupCommand() {
+            var removeCommand = new Command("remove") {
+                Description = "Removes the specified program from startup"
+            };
+
+            removeCommand.AddAlias("r");
+
+            removeCommand.AddArgument(new Argument<string>("name"));
+
+            var skipConfirmation = new Option("--confirm", "Skips the confirmation prompt");
+            skipConfirmation.AddAlias("-c");
+            removeCommand.AddOption(skipConfirmation);
+
+            removeCommand.Handler = CommandHandler.Create<string, bool>(RemoveCommand.Run);
+
+            return removeCommand;
         }
 
         private static Command GetDisableStartupCommand() {

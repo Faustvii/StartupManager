@@ -51,7 +51,7 @@ namespace StartupManager.Commands.StartupToggle {
 
         private static void ToggleThroughRegedit(bool enable, string toggleText, ListProgram program) {
             try {
-                using(var reg = RegistryHelper.GetWriteRegistryKey(program)) {
+                using(var reg = RegistryHelper.GetWriteRegistryKey(program.DisabledRegistryPath, program.AllUsers)) {
                     byte[] bytes;
                     if (enable) {
                         bytes = RegistryHelper.MakeEnabledBytes();

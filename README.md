@@ -15,6 +15,7 @@ A tool to manage startup programs on windows through a CLI interface.
     - [Disable](#disable)
     - [Add](#add)
       - [Examples of usage](#examples-of-usage)
+    - [Remove](#remove)
 
 ## Commands
 
@@ -168,3 +169,24 @@ All Users: False
 Does this look correct? y/n: y
 Added MyWelcomeApp to startup
  ```
+
+### Remove
+
+This command will remove a program from starting with windows by deleting the registry entry, task or shortcut.
+
+Examples of usage
+
+`StartupManager remove MyWelcomeApp` would output
+
+```text
+Are you sure you want to delete 'MyWelcomeApp' y/n: y
+MyWelcomeApp has been removed
+```
+
+It's possible to skip the confirmation by adding the option `--confirm` or `-c`
+
+`StartupManager remove MyWelcomeApp --confirm` or `StartupManager r MyWelcomeApp -c` would output
+
+```text
+MyWelcomeApp has been removed
+```

@@ -37,6 +37,7 @@ Commands:
   d, disable <name>                   Disables one of the current startup programs
   e, enable <name>                    Enables one of the current startup programs
   a, add <name> <path> <arguments>    Adds a program to startup with windows
+  r, remove <name>                    Removes the specified program from startup
 ```
 
 The help command can also be used on any commands;

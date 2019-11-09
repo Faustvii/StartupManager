@@ -7,7 +7,6 @@ using StartupManager.Commands.StartupList;
 
 namespace StartupManager.Helpers {
     public static class TaskSchedulerHelper {
-
         public static void RemoveProgramFromStartup(string name) {
             using(var taskService = new TaskService()) {
                 var task = taskService.FindTask(name);

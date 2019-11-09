@@ -6,6 +6,7 @@
 A tool to manage startup programs on windows through a CLI interface.
 
 - [StartupManager](#startupmanager)
+  - [Scoop](#scoop)
   - [Commands](#commands)
     - [Help](#help)
     - [Version](#version)
@@ -16,6 +17,16 @@ A tool to manage startup programs on windows through a CLI interface.
     - [Add](#add)
       - [Examples of usage](#examples-of-usage)
     - [Remove](#remove)
+
+## Scoop
+
+You can install the application through [Scoop](https://github.com/lukesampson/scoop) if you have my bucket installed.
+
+I recommend installin through scoop to have the app accessible on your "path"
+
+`scoop bucket add Faustvii 'https://github.com/Faustvii/scoop-bucket.git'`
+
+`scoop install StartupManager`
 
 ## Commands
 

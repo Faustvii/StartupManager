@@ -62,7 +62,7 @@ Displays the current version of the application
 Examples of usage `StartupManager.exe --version`
 
 ```text
-1.3.0
+1.4.1
 ```
 
 ### List

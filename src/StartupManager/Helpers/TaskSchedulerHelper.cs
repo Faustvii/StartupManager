@@ -34,19 +34,42 @@ namespace StartupManager.Helpers {
             }
         }
 
-        public static List<ListProgram> GetStartupTaskScheduler(bool showWindows) {
-            using(var taskService = new TaskService()) {
-                var predicate = GetTaskPredicate(showWindows);
-                var tasks = taskService.FindAllTasks(predicate);
-                return tasks.Select(x =>
-                        new ListProgram(x.Name,
-                            path : string.Join($" | ", x.Definition.Actions.Select(a => GetPathFromAction(a))),
-                            requireAdministrator : true,
-                            disabled: !x.Enabled,
-                            type : ListProgram.StartupType.TaskScheduler,
-                            allUsers : x.Definition.Triggers.Where(t => t.TriggerType == TaskTriggerType.Logon).All(x => ((LogonTrigger)x).UserId != null)))
-                    .ToList();
+        private static IEnumerable<Task> GetAllTasks(bool includeWindows) {
+            var predicate = GetPredicate(includeWindows);
+
+            return GetFolderTasks(TaskService.Instance.RootFolder, predicate);
+        }
+
+        private static IEnumerable<Task> GetFolderTasks(TaskFolder folder, Func<TaskFolder, bool> predicate) {
+            var tasks = new List<Task>();
+            tasks.AddRange(folder.Tasks.Where(x => x.Definition.Triggers.Any(x => x.TriggerType == TaskTriggerType.Logon)));
+
+            foreach (TaskFolder subFolder in folder.SubFolders.Where(predicate)) {
+                tasks.AddRange(GetFolderTasks(subFolder, predicate));
             }
+
+            return tasks;
+        }
+
+        private static Func<TaskFolder, bool> GetPredicate(bool includeWindows) {
+            if (includeWindows) {
+                return x => true;
+            } else {
+                return x => !x.Name.Contains("Microsoft", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        public static List<ListProgram> GetStartupTaskScheduler(bool includeWindows) {
+
+            var tasks = GetAllTasks(includeWindows);
+            return tasks.Select(x =>
+                    new ListProgram(x.Name,
+                        path : string.Join($" | ", x.Definition.Actions.Select(a => GetPathFromAction(a))),
+                        requireAdministrator : true,
+                        disabled: !x.Enabled,
+                        type : ListProgram.StartupType.TaskScheduler,
+                        allUsers : x.Definition.Triggers.Where(t => t.TriggerType == TaskTriggerType.Logon).All(x => ((LogonTrigger)x).UserId != null)))
+                .ToList();
         }
 
         private static string GetPathFromAction(Microsoft.Win32.TaskScheduler.Action action) {
@@ -64,13 +87,6 @@ namespace StartupManager.Helpers {
             }
         }
 
-        private static Predicate<Task> GetTaskPredicate(bool includeWindows) {
-            if (includeWindows) {
-                return new Predicate<Task>(x => x.Definition.Triggers.Any(x => x.TriggerType == TaskTriggerType.Logon));
-            } else {
-                return new Predicate<Task>(x => x.Definition.Triggers.Any(x => x.TriggerType == TaskTriggerType.Logon) && x.Definition.RegistrationInfo.Author != "Microsoft Corporation" && !x.Path.Contains(@"\Microsoft\"));
-            }
-        }
         public static Task RegisterTask(TaskDefinition taskDef, StartupProgram program) {
             using(var taskService = new TaskService()) {
                 return taskService.RootFolder.RegisterTaskDefinition($"StartupManager\\{program.Name}", taskDef);

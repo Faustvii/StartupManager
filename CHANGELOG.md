@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2019-11-10
+
+### Added
+
+- Made the list output on average twice as fast previous versions (On test machines).
+- Enable/Disable commands have also gotten a performance boost.
+- Remove command has also gotten a small performance boost.
+- Add command has also gotten a small performance boost.
+
+### Fixed
+
+- In some cases an exception would be thrown when trying to Enable/Disable a program, this is no longer the case.
+- It was possible to add a new startup item with the same name as an existing one in some cases.
+- The remove command wasn't able to remove shortcut based Startup programs.
+
 ## [1.4.1] - 2019-11-09
 
 ### Fixed
@@ -77,7 +92,8 @@ No new application features, but streamlined build, publish and release process.
 - Enable/Disable command
   - It's now possible to enable/disable existing programs starting with windows.
 
-[Unreleased]: https://github.com/Faustvii/StartupManager/compare/1.4.1...HEAD
+[Unreleased]: https://github.com/Faustvii/StartupManager/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/Faustvii/StartupManager/compare/1.4.1...1.5.0
 [1.4.1]: https://github.com/Faustvii/StartupManager/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/Faustvii/StartupManager/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/Faustvii/StartupManager/compare/1.2.1...1.3.0

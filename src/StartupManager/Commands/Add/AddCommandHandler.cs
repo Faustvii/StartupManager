@@ -57,7 +57,6 @@ namespace StartupManager.Commands.Add {
                 new ConsoleColorOutput(WriteMode.Write, "Added "),
                     new ConsoleColorOutput(WriteMode.Write, program.Name, ConsoleColor.Yellow),
                     new ConsoleColorOutput(WriteMode.Writeline, " to startup")
-
             };
         }
     }

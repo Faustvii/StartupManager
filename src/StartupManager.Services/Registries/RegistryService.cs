@@ -43,7 +43,7 @@ namespace StartupManager.Services.Registries {
                     }
 
                     var currentValue = (byte[]) reg.GetValue(program.RegistryName);
-                    
+
                     if (currentValue == null) {
                         reg.SetValue(program.RegistryName, bytes);
                         return StateChange.Success;
@@ -75,7 +75,7 @@ namespace StartupManager.Services.Registries {
                 if (allUsers != null) {
                     startupPrograms.AddRange(allUsers);
                 }
-            };
+            }
             return startupPrograms;
         }
 
@@ -227,6 +227,5 @@ namespace StartupManager.Services.Registries {
             var bytes = startBytes.Concat(timeBytes).ToArray();
             return bytes;
         }
-
     }
 }

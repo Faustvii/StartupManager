@@ -25,12 +25,12 @@ namespace StartupManager.Services.Directories {
                 var parsedName = Path.GetFileNameWithoutExtension(path);
                 var disabled = startupStates.Any(disabledPredicate);
 
-                return new StartupList(parsedName, path, requireAdministrator : true, disabled, StartupList.StartupType.Shortcut, allUsers : true, string.Empty, DisabledStartupFolderItems, fileName);;
+                return new StartupList(parsedName, path, requireAdministrator : true, disabled, StartupList.StartupType.Shortcut, allUsers : true, string.Empty, DisabledStartupFolderItems, fileName);
             } else {
                 var parsedName = Path.GetFileNameWithoutExtension(path);
                 var fileName = Path.GetFileName(path);
                 var disabled = startupStates.Any(disabledPredicate);
-                return new StartupList(parsedName, path, requireAdministrator : false, disabled, StartupList.StartupType.Shortcut, allUsers : false, string.Empty, DisabledStartupFolderItems, fileName);;
+                return new StartupList(parsedName, path, requireAdministrator : false, disabled, StartupList.StartupType.Shortcut, allUsers : false, string.Empty, DisabledStartupFolderItems, fileName);
             }
         }
 

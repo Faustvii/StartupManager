@@ -58,7 +58,6 @@ namespace StartupManager.Commands.Remove {
             return new [] {
                 new ConsoleColorOutput(WriteMode.Write, program.Name, ConsoleColor.Yellow),
                     new ConsoleColorOutput(WriteMode.Writeline, " has been removed"),
-
             };
         }
     }

@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
-    <PackageReference Include="TaskScheduler" Version="2.8.16" />
+    <PackageReference Include="TaskScheduler" Version="2.8.17" />
   </ItemGroup>
 
   <PropertyGroup>

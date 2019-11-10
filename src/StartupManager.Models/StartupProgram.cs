@@ -1,5 +1,6 @@
 using System.IO;
-namespace StartupManager.Commands.Add {
+
+namespace StartupManager.Models {
     public class StartupProgram {
         public string Name { get; set; }
         public FileInfo File { get; set; }

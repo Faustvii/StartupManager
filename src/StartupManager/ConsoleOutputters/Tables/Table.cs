@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace StartupManager.Helpers.Tables {
+namespace StartupManager.ConsoleOutputters.Tables {
     public class Table<T> {
         public readonly string RawTableString;
         public Header<T>[] Headers { get; set; }

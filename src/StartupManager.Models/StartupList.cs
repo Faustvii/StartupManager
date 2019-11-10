@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace StartupManager.Commands.StartupList {
-    public class ListProgram {
-        public string Name { get; set; }
+namespace StartupManager.Models {
+    public class StartupList {
+        private string _name = string.Empty;
+        public string Name { get => _name; set => _name = ParseName(value); }
         public string Path { get; set; }
         public bool RequireAdministrator { get; set; }
         public bool Disabled { get; set; }
@@ -12,16 +13,30 @@ namespace StartupManager.Commands.StartupList {
         public string RegistryName { get; set; }
         public StartupType Type { get; set; }
 
-        public ListProgram(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers, string registryPath = "", string disabledRegistryPath = "", string registryName = "") {
+        public StartupList(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers, string registryPath, string disabledRegistryPath, string registryName) {
             Path = path ?? string.Empty;
             RequireAdministrator = requireAdministrator;
             Disabled = disabled;
             Type = type;
             AllUsers = allUsers;
+            Name = name;
+
             RegistryPath = registryPath;
             DisabledRegistryPath = disabledRegistryPath;
             RegistryName = registryName;
-            Name = ParseName(name);
+        }
+
+        public StartupList(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers) {
+            Path = path ?? string.Empty;
+            RequireAdministrator = requireAdministrator;
+            Disabled = disabled;
+            Type = type;
+            AllUsers = allUsers;
+            Name = name;
+
+            RegistryPath = string.Empty;
+            DisabledRegistryPath = string.Empty;
+            RegistryName = string.Empty;
         }
 
         private string ParseName(string name) {
@@ -39,4 +54,4 @@ namespace StartupManager.Commands.StartupList {
             TaskScheduler
         }
     }
-}
+} //00:00:00.0074059

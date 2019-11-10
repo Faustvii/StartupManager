@@ -1,6 +1,6 @@
 using System;
 
-namespace StartupManager.Helpers.Tables {
+namespace StartupManager.ConsoleOutputters.Tables {
     public class Header<T> {
         public Header(string name, Func<T, object> dataSelector, Func<T, ConsoleColor> colorSelector) {
             Name = name;

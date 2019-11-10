@@ -1,89 +1,92 @@
 using System;
-using System.Linq;
-using Microsoft.Win32.TaskScheduler;
-using StartupManager.Commands.StartupList;
-using StartupManager.ConsoleOutputters;
-using StartupManager.Helpers;
+using System.Collections.Generic;
+using StartupManager.Models;
+using StartupManager.Services.Directories;
+using StartupManager.Services.Registries;
+using StartupManager.Services.Schedulers;
+using StartupManager.Services.Startup;
 
 namespace StartupManager.Commands.StartupToggle {
     public static class EnableDisableCommandHandler {
-        public static void Run(string name, bool enable) {
+        private static IRegistryService RegistryService = new RegistryService();
+        private static IDirectoryService DirectoryService = new DirectoryService();
+        private static ITaskSchedulerService TaskSchedulerService = new TaskSchedulerService();
+        private static IStartupQueryService StartupQueryService = new StartupQueryService();
+        public static IEnumerable<ConsoleColorOutput> Run(string name, bool enable) {
+            var consoleMessages = new List<ConsoleColorOutput>();
             var toggleText = enable ? "enabled" : "disabled";
-            var program = ListCommandHandler.Run(true).FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            var startupStates = RegistryService.GetStartupProgramStates();
+            var program = StartupQueryService.GetStartupByName(name, startupStates);
+
             if (program == null) {
-                ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Red, "Could not find a program with name ");
-                ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Yellow, name);
-                return;
+                return WriteProgramNotFoundConsoleOutput(name);
             }
 
             switch (program.Type) {
-                case ListProgram.StartupType.TaskScheduler:
-                    ToggleThroughTaskScheduler(enable, toggleText, program);
+                case Models.StartupList.StartupType.TaskScheduler:
+                    consoleMessages.AddRange(ToggleThroughTaskScheduler(enable, toggleText, program));
                     break;
-                case ListProgram.StartupType.Regedit:
-                case ListProgram.StartupType.Shortcut:
-                    ToggleThroughRegedit(enable, toggleText, program);
+                case Models.StartupList.StartupType.Regedit:
+                case Models.StartupList.StartupType.Shortcut:
+                    consoleMessages.AddRange(ToggleThroughRegedit(enable, toggleText, program));
                     break;
             }
+            return consoleMessages;
         }
 
-        private static void ToggleThroughTaskScheduler(bool enable, string toggleText, ListProgram program) {
-            try {
-                using(var taskService = new TaskService()) {
-                    var task = taskService.FindTask(program.Name);
-                    var isAlreadyTheRequestState = task.Enabled == enable;
-                    if (isAlreadyTheRequestState) {
-                        WriteSameStateConsoleOutput(toggleText, program);
-                    } else {
-                        task.Enabled = enable;
-                        WriteToggledConsoleOutput(toggleText, program);
-                    }
-                }
-            } catch (UnauthorizedAccessException) {
-                WriteRequireAdministratorConsoleOutput(program);
+        private static IEnumerable<ConsoleColorOutput> ToggleThroughTaskScheduler(bool enable, string toggleText, Models.StartupList program) {
+            var result = TaskSchedulerService.ToggleStartupState(program, enable);
+            switch (result) {
+                case StateChange.SameState:
+                    return WriteSameStateConsoleOutput(toggleText, program);
+                case StateChange.Success:
+                    return WriteToggledConsoleOutput(toggleText, program);
+                case StateChange.Unauthorized:
+                    return WriteRequireAdministratorConsoleOutput(program);
             }
+            return new List<ConsoleColorOutput>();
         }
 
-        private static void WriteSameStateConsoleOutput(string toggleText, ListProgram program) {
-            ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
-            Console.WriteLine($" is already {toggleText}");
-        }
-
-        private static void ToggleThroughRegedit(bool enable, string toggleText, ListProgram program) {
-            try {
-                using(var reg = RegistryHelper.GetWriteRegistryKey(program.DisabledRegistryPath, program.AllUsers)) {
-                    byte[] bytes;
-                    if (enable) {
-                        bytes = RegistryHelper.MakeEnabledBytes();
-                    } else {
-                        bytes = RegistryHelper.MakeDisabledBytes();
-                    }
-
-                    var currentValue = (byte[])reg.GetValue(program.RegistryName);
-                    var isAlreadyTheRequestState = new ReadOnlySpan<byte>(bytes.Take(4).ToArray()).SequenceEqual(currentValue.Take(4).ToArray());
-
-                    if (isAlreadyTheRequestState) {
-                        WriteSameStateConsoleOutput(toggleText, program);
-                    } else {
-                        RegistryHelper.SetBytes(reg, program.RegistryName, bytes);
-
-                        WriteToggledConsoleOutput(toggleText, program);
-                    }
-                }
-            } catch (UnauthorizedAccessException) {
-                WriteRequireAdministratorConsoleOutput(program);
+        private static IEnumerable<ConsoleColorOutput> ToggleThroughRegedit(bool enable, string toggleText, Models.StartupList program) {
+            var result = RegistryService.ToggleStartupState(program, enable);
+            switch (result) {
+                case Models.StateChange.SameState:
+                    return WriteSameStateConsoleOutput(toggleText, program);
+                case Models.StateChange.Success:
+                    return WriteToggledConsoleOutput(toggleText, program);
+                case Models.StateChange.Unauthorized:
+                    return WriteRequireAdministratorConsoleOutput(program);
             }
+            return new List<ConsoleColorOutput>();
         }
 
-        private static void WriteRequireAdministratorConsoleOutput(ListProgram program) {
-            ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Red, $"To modify settings for ");
-            ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
-            ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Red, " you need to run the command with administrator (sudo)");
+        private static IEnumerable<ConsoleColorOutput> WriteProgramNotFoundConsoleOutput(string name) {
+            return new [] {
+                new ConsoleColorOutput(WriteMode.Write, "Could not find a program with name ", ConsoleColor.Red),
+                    new ConsoleColorOutput(WriteMode.Writeline, name, ConsoleColor.Yellow),
+            };
         }
 
-        private static void WriteToggledConsoleOutput(string toggleText, ListProgram program) {
-            ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
-            Console.WriteLine($" has been {toggleText}");
+        private static IEnumerable<ConsoleColorOutput> WriteSameStateConsoleOutput(string toggleText, Models.StartupList program) {
+            return new [] {
+                new ConsoleColorOutput(WriteMode.Write, program.Name, ConsoleColor.Yellow),
+                    new ConsoleColorOutput(WriteMode.Writeline, $" is already {toggleText}"),
+            };
+        }
+
+        private static IEnumerable<ConsoleColorOutput> WriteRequireAdministratorConsoleOutput(Models.StartupList program) {
+            return new [] {
+                new ConsoleColorOutput(WriteMode.Write, $"To modify settings for ", ConsoleColor.Red),
+                    new ConsoleColorOutput(WriteMode.Write, program.Name, ConsoleColor.Yellow),
+                    new ConsoleColorOutput(WriteMode.Writeline, " you need to run the command with administrator (sudo)", ConsoleColor.Red),
+            };
+        }
+
+        private static IEnumerable<ConsoleColorOutput> WriteToggledConsoleOutput(string toggleText, Models.StartupList program) {
+            return new [] {
+                new ConsoleColorOutput(WriteMode.Write, program.Name, ConsoleColor.Yellow),
+                    new ConsoleColorOutput(WriteMode.Writeline, $" has been {toggleText}"),
+            };
         }
     }
 }

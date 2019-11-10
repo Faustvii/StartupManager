@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using StartupManager.Commands.StartupList;
 using StartupManager.ConsoleOutputters;
-using StartupManager.Helpers;
+using StartupManager.Models;
 
 namespace StartupManager.Commands.Add {
     public static class AddCommand {
@@ -13,6 +12,7 @@ namespace StartupManager.Commands.Add {
         private static string ArgumentsId = "Arguments";
         private static string AdministratorId = "Administrator";
         private static string AllUserId = "All Users";
+
         public static void Run(string? name, FileInfo? path, string? arguments, bool? admin, bool? allUsers) {
             if (name == null || (path == null || !path.Exists) || arguments == null || admin == null || allUsers == null) {
                 var steps = GetWizardSteps(name, path, arguments, admin, allUsers);
@@ -26,55 +26,19 @@ namespace StartupManager.Commands.Add {
 
                 var correct = ConsoleStepWizard.PromptUserForBool("y", "n", "Does this look correct? y/n: ");
                 if (correct) {
-                    AddStartupProgram(startupProgram);
+                    ExecuteHandler(startupProgram);
                 } else {
                     System.Console.WriteLine("Sorry to hear that, please try again");
                 }
             } else {
                 var startupProgram = ParseUserInfo(new List<ConsoleStep>(), name, path, arguments, admin, allUsers);
-                AddStartupProgram(startupProgram);
+                ExecuteHandler(startupProgram);
             }
         }
 
-        private static void AddStartupProgram(StartupProgram program) {
-            var existingPrograms = ListCommandHandler.Run(true).ToList();
-            var nameInUseBy = existingPrograms.FirstOrDefault(x => x.RegistryName.Equals(program.Name, StringComparison.OrdinalIgnoreCase));
-            var programAlreadyStarts = existingPrograms.FirstOrDefault(x => x.Path.Contains(program.File.FullName, StringComparison.OrdinalIgnoreCase) && !x.Disabled);
-            if (nameInUseBy != null) {
-                ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
-                ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Red, " is already in use, please try again with a different name");
-                return;
-            }
-            if (programAlreadyStarts != null) {
-                ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.File.Name);
-                ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Red, " already starts with windows");
-                Console.Write("Want to add another instance of it to startup? y/n: ");
-                var userWantsToContinue = ConsoleStepWizard.PromptUserForBool("y", "n", $"Want to add another? y/n: ");
-                if (!userWantsToContinue) {
-                    return;
-                }
-            }
-
-            if (program.AllUsers || program.Administrator) {
-                if (!WindowsIdentityHelper.IsElevated()) {
-                    System.Console.WriteLine("This requires you run the command as administrator");
-                    return;
-                }
-            }
-
-            //Current user only programs requires a schedule task to run as Administrator
-            if (program.Administrator && !program.AllUsers) {
-                var taskDef = TaskSchedulerHelper.AddProgramToStartup(program);
-                TaskSchedulerHelper.RegisterTask(taskDef, program);
-            } else {
-                using(var registryKey = RegistryHelper.GetWriteStartupRegistryKey(program)) {
-                    registryKey.SetValue(program.Name, $"\"{program.File.FullName}\" {program.Arguments}");
-                }
-            }
-
-            Console.Write("Added ");
-            ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Yellow, program.Name);
-            Console.WriteLine(" to startup");
+        private static void ExecuteHandler(StartupProgram startupProgram) {
+            var messages = AddCommandHandler.Run(startupProgram);
+            ConsoleOutputWriter.WriteToConsole(messages);
         }
 
         private static void ValidateInformationWithUser(StartupProgram data) {
@@ -111,14 +75,14 @@ namespace StartupManager.Commands.Add {
         }
 
         private static StartupProgram ParseUserInfo(IEnumerable<ConsoleStep> steps, string? name, FileInfo? file, string? arguments, bool? admin, bool? allUsers) {
-            var nameVal = name ?? (string)steps.Single(x => x.Id == NameId).UserValue;
-            var fileVal = file ?? (FileInfo)steps.Single(x => x.Id == PathId).UserValue;
+            var nameVal = name ?? (string) steps.Single(x => x.Id == NameId).UserValue;
+            var fileVal = file ?? (FileInfo) steps.Single(x => x.Id == PathId).UserValue;
             if (!fileVal.Exists) {
-                fileVal = (FileInfo)steps.Single(x => x.Id == PathId).UserValue;
+                fileVal = (FileInfo) steps.Single(x => x.Id == PathId).UserValue;
             }
-            var argumentsVal = arguments ?? (string)steps.Single(x => x.Id == ArgumentsId).UserValue;
-            var adminVal = admin ?? (bool)steps.Single(x => x.Id == AdministratorId).UserValue;
-            var allUserVal = allUsers ?? (bool)steps.Single(x => x.Id == AllUserId).UserValue;
+            var argumentsVal = arguments ?? (string) steps.Single(x => x.Id == ArgumentsId).UserValue;
+            var adminVal = admin ?? (bool) steps.Single(x => x.Id == AdministratorId).UserValue;
+            var allUserVal = allUsers ?? (bool) steps.Single(x => x.Id == AllUserId).UserValue;
             return new StartupProgram(nameVal, fileVal, argumentsVal, adminVal, allUserVal);
         }
     }

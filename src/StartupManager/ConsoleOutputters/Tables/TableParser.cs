@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace StartupManager.Helpers.Tables {
+namespace StartupManager.ConsoleOutputters.Tables {
     public static class TableParser {
         public const string HeaderSeperator = "|-_-|";
         public const string LineSeperator = "|_-_|";

@@ -22,7 +22,7 @@ A tool to manage startup programs on windows through a CLI interface.
 
 You can install the application through [Scoop](https://github.com/lukesampson/scoop) if you have my bucket installed.
 
-I recommend installin through scoop to have the app accessible on your "path"
+I recommend installing through scoop to have the app accessible on your "path"
 
 `scoop bucket add Faustvii 'https://github.com/Faustvii/scoop-bucket.git'`
 

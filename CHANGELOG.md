@@ -8,6 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] -  2020-06-12
+
+No new functionality was added in this release, but almost all packages were upgraded, which has resulted in a minor performance increase.
+
+Before
+```
+Avg: 559.7063ms
+Min: 553.4852ms
+Max: 575.3427ms
+```
+
+After
+```
+Avg: 456.1703ms
+Min: 450.5132ms
+Max: 461.5471ms
+```
+
+Tested on my own machine, results may vary.
+
+### Changed
+- Updated to .NET Core 3.1
+- Updated TaskScheduler dependency
+- Updated Registry dependency
+- Updated System.Commandline framework
+
 ## [1.5.0] - 2019-11-10
 
 ### Added

@@ -1,4 +1,4 @@
-﻿using System.CommandLine.Invocation;
+﻿using System.CommandLine;
 using System.Threading.Tasks;
 using StartupManager.Commands;
 

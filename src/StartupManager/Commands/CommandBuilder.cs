@@ -39,11 +39,11 @@ namespace StartupManager.Commands {
 
             addCommand.AddAlias("a");
 
-            addCommand.AddArgument(new Argument<string?>("name", null));
-            addCommand.AddArgument(new Argument<FileInfo?>("path", null));
-            addCommand.AddArgument(new Argument<string?>("arguments", null));
-            addCommand.AddArgument(new Argument<bool?>("admin", null));
-            addCommand.AddArgument(new Argument<bool?>("allUsers", null));
+            addCommand.AddArgument(new Argument<string?>("name", null) { Arity = ArgumentArity.ZeroOrOne });
+            addCommand.AddArgument(new Argument<FileInfo?>("path", null) { Arity = ArgumentArity.ZeroOrOne });
+            addCommand.AddArgument(new Argument<string?>("arguments", null) { Arity = ArgumentArity.ZeroOrOne });
+            addCommand.AddArgument(new Argument<bool?>("admin", null) { Arity = ArgumentArity.ZeroOrOne });
+            addCommand.AddArgument(new Argument<bool?>("allUsers", null) { Arity = ArgumentArity.ZeroOrOne });
 
             addCommand.Handler = CommandHandler.Create<string?, FileInfo?, string?, bool?, bool?>(AddCommand.Run);
 

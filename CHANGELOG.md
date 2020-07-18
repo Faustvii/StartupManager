@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2020-07-18
+
+### Fixed
+
+- #15 Fixed an issue with DirectoryService trying to search an empty path.
+
 ## [1.6.0] -  2020-06-12
 
 No new functionality was added in this release, but almost all packages were upgraded, which has resulted in a minor performance increase.

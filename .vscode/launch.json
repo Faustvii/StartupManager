@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/StartupManager/bin/Debug/netcoreapp3.0/win10-x64/StartupManager.exe",
+            "program": "${workspaceFolder}/src/StartupManager/bin/Debug/netcoreapp3.1/win10-x64/StartupManager.exe",
             "args": ["l", "-d"],
             "cwd": "${workspaceFolder}/src/StartupManager",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

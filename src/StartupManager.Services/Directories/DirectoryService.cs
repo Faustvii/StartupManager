@@ -78,6 +78,9 @@ namespace StartupManager.Services.Directories {
         }
 
         public static IEnumerable<string> GetFiles(string path, string[] searchPatterns, SearchOption searchOption = SearchOption.TopDirectoryOnly) {
+            if (string.IsNullOrWhiteSpace(path))
+                return new string[0];
+
             return searchPatterns.SelectMany(searchPattern => Directory.EnumerateFiles(path, searchPattern, searchOption));
         }
 

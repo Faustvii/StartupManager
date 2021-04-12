@@ -42,7 +42,7 @@ jobs:
       - name: Archive Release
         uses: montudor/action-zip@v0.1.0
         with:
-          args: zip -jr StartupManager ./src/StartupManager/bin/Release/netcoreapp3.1/win10-x64/publish/StartupManager.exe
+          args: zip -jr StartupManager ./src/StartupManager/bin/Release/net5.0/win10-x64/publish/StartupManager.exe
 
       - name: Release
         uses: anton-yurchenko/git-release@v1.0.0

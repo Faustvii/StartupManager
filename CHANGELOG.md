@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.2] - 2021-04-12
+
+### Changed
+
+- Updated to .NET 5
+- Updated TaskScheduler dependency
+- Updated Microsoft.Win32.Registry dependency
+
+### Fixed
+
+- #21 Scoop installation issue due to older .NET should  be resolved
+- Fixed potential null pointer warnings.
+
+
 ## [1.6.1] - 2020-07-18
 
 ### Fixed

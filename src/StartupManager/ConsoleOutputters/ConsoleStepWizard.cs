@@ -19,20 +19,20 @@ namespace StartupManager.ConsoleOutputters {
             return val
             switch {
                 FileInfo file => GetFileInfoFromUser(message),
-                    string stringVal => Console.ReadLine(),
+                    string stringVal => Console.ReadLine() ?? string.Empty,
                     bool boolVal => PromptUserForBool("y", "n", message),
                     _ => val
             };
         }
 
         public static FileInfo GetFileInfoFromUser(string message) {
-            var input = Console.ReadLine().Replace("\"", string.Empty);
+            var input = (Console.ReadLine() ?? string.Empty).Replace("\"", string.Empty);
             var file = new FileInfo(input);
             while (!file.Exists) {
                 Console.WriteLine();
                 ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Red, "That file doesn't seem to exist, please try again");
                 Console.Write(message);
-                input = Console.ReadLine().Replace("\"", string.Empty);;
+                input = (Console.ReadLine() ?? string.Empty).Replace("\"", string.Empty);;
                 file = new FileInfo(input);
             }
             return file;

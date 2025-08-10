@@ -13,6 +13,7 @@ namespace StartupManager.ConsoleOutputters.ListOutput {
 
         private static void Output(IEnumerable<StartupList> programs, bool detailed) {
             var tableHeaders = new List<Header<StartupList>> {
+                new Header<StartupList>("#", x => x.Index, x => ConsoleColor.Blue),
                 new Header<StartupList>("Name", x => x.Name, x => ConsoleColor.Yellow),
                 new Header<StartupList>("Admin", x => x.RequireAdministrator ? "[\u221A]" : string.Empty, x => ConsoleColor.Cyan),
                 new Header<StartupList>("Enabled", x => x.Disabled ? "[x]" : "[\u221A]", x => x.Disabled ? ConsoleColor.Red : ConsoleColor.DarkCyan),

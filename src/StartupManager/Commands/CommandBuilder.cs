@@ -75,7 +75,7 @@ namespace StartupManager.Commands {
 
             disableCommand.AddAlias("d");
 
-            disableCommand.AddArgument(new Argument<string>("name"));
+            disableCommand.AddArgument(new Argument<string>("name", description: "Name or index of the program to disable"));
 
             disableCommand.Handler = CommandHandler.Create<string>(DisableCommand.Run);
 
@@ -83,17 +83,17 @@ namespace StartupManager.Commands {
         }
 
         private static Command GetEnableStartupCommand() {
-            var disableCommand = new Command("enable") {
+            var enableCommand = new Command("enable") {
                 Description = "Enables one of the current startup programs"
             };
 
-            disableCommand.AddAlias("e");
+            enableCommand.AddAlias("e");
 
-            disableCommand.AddArgument(new Argument<string>("name"));
+            enableCommand.AddArgument(new Argument<string>("name", description: "Name or index of the program to enable"));
 
-            disableCommand.Handler = CommandHandler.Create<string>(EnableCommand.Run);
+            enableCommand.Handler = CommandHandler.Create<string>(EnableCommand.Run);
 
-            return disableCommand;
+            return enableCommand;
         }
     }
 }

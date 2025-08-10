@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.3] - 2025-08-10
+
+### Added
+
+- #6 Ability to disable/enable by index
+
+### Changed
+
+- Updated to .NET 9
+
 ## [1.6.2] - 2021-04-12
 
 ### Changed
@@ -20,7 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - #21 Scoop installation issue due to older .NET should  be resolved
 - Fixed potential null pointer warnings.
-
 
 ## [1.6.1] - 2020-07-18
 
@@ -37,14 +46,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 No new functionality was added in this release, but almost all packages were upgraded, which has resulted in a minor performance increase.
 
 Before
-```
+
+```text
 Avg: 559.7063ms
 Min: 553.4852ms
 Max: 575.3427ms
 ```
 
 After
-```
+
+```text
 Avg: 456.1703ms
 Min: 450.5132ms
 Max: 461.5471ms
@@ -53,6 +64,7 @@ Max: 461.5471ms
 Tested on my own machine, results may vary.
 
 ### Changed
+
 - Updated to .NET Core 3.1
 - Updated TaskScheduler dependency
 - Updated Registry dependency
@@ -142,7 +154,11 @@ No new application features, but streamlined build, publish and release process.
 - Enable/Disable command
   - It's now possible to enable/disable existing programs starting with windows.
 
-[Unreleased]: https://github.com/Faustvii/StartupManager/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/Faustvii/StartupManager/compare/1.6.3...HEAD
+[1.6.3]: https://github.com/Faustvii/StartupManager/compare/1.6.2...1.6.3
+[1.6.2]: https://github.com/Faustvii/StartupManager/compare/1.6.1...1.6.2
+[1.6.1]: https://github.com/Faustvii/StartupManager/compare/1.6.0...1.6.1
+[1.6.0]: https://github.com/Faustvii/StartupManager/compare/1.5.0...1.6.0
 [1.5.0]: https://github.com/Faustvii/StartupManager/compare/1.4.1...1.5.0
 [1.4.1]: https://github.com/Faustvii/StartupManager/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/Faustvii/StartupManager/compare/1.3.0...1.4.0

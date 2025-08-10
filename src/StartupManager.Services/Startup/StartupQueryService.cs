@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Win32.TaskScheduler;
 using StartupManager.Models;
 using StartupManager.Services.Directories;
@@ -23,7 +24,31 @@ namespace StartupManager.Services.Startup {
             return program;
         }
 
-        public StartupList? GetStartupByName(string name) {
+        public StartupList? GetStartupByIndex(int index, IEnumerable<StartupState> startupStates) {
+            var registryPrograms = RegistryService.GetStartupPrograms(startupStates);
+            var directoryPrograms = DirectoryService.GetStartupPrograms(startupStates);
+            var taskSchedulerPrograms = TaskSchedulerService.GetStartupPrograms(false);
+            var allPrograms = new List<StartupList>();
+            if (registryPrograms != null) {
+                allPrograms.AddRange(registryPrograms);
+            }
+            if (directoryPrograms != null) {
+                allPrograms.AddRange(directoryPrograms);
+            }
+            if (taskSchedulerPrograms != null) {
+                allPrograms.AddRange(taskSchedulerPrograms);
+            }
+            allPrograms = allPrograms.OrderBy(program => program.Name).ToList();
+            return allPrograms.ElementAtOrDefault(index - 1); // Index is 1-based in the command line
+        }
+
+        public StartupList? GetStartupByIndex(int index) {
+            var startupStates = RegistryService.GetStartupProgramStates();
+            return GetStartupByIndex(index, startupStates);
+        }
+
+        public StartupList? GetStartupByName(string name)
+        {
             var startupStates = RegistryService.GetStartupProgramStates();
             return GetStartupByName(name, startupStates);
         }

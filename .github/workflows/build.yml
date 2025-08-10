@@ -16,7 +16,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -33,16 +33,16 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Publish with dotnet
         run: dotnet publish --configuration Release
         working-directory: ./src/StartupManager/
 
       - name: Archive Release
-        uses: montudor/action-zip@v0.1.0
+        uses: montudor/action-zip@v1.0.0
         with:
-          args: zip -jr StartupManager ./src/StartupManager/bin/Release/net5.0/win10-x64/publish/StartupManager.exe
+          args: zip -jr StartupManager ./src/StartupManager/bin/Release/net9.0/win-x64/publish/StartupManager.exe
 
       - name: Release
         uses: anton-yurchenko/git-release@v1.0.0

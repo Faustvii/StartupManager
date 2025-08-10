@@ -42,7 +42,7 @@ namespace StartupManager.Services.Registries {
                         bytes = MakeDisabledBytes();
                     }
 
-                    var currentValue = (byte[]) reg.GetValue(program.RegistryName);
+                    var currentValue = (byte[]?) reg.GetValue(program.RegistryName);
 
                     if (currentValue == null) {
                         reg.SetValue(program.RegistryName, bytes);
@@ -118,9 +118,9 @@ namespace StartupManager.Services.Registries {
                     var startupValues = registry.GetValueNames();
                     var name = startupValues.FirstOrDefault(predicate);
                     if (name != null) {
-                        var path = registry.GetValue(name).ToString();
+                        var path = registry?.GetValue(name)?.ToString();
                         var disabled = startupStates.Any(disabledPredicate);
-                        return new StartupList(name, path, requireAdministrator : allUsers, disabled, StartupList.StartupType.Regedit, allUsers : allUsers, StartupRegistryPaths.First(x => registry.Name.Contains(x)), DisabledStartupRegistryItems, name);
+                        return new StartupList(name, path, requireAdministrator : allUsers, disabled, StartupList.StartupType.Regedit, allUsers : allUsers, StartupRegistryPaths.First(x => registry?.Name.Contains(x) == true), DisabledStartupRegistryItems, name);
                     }
                 }
             }
@@ -133,10 +133,10 @@ namespace StartupManager.Services.Registries {
             using(var allUserDisabledReg = GetReadRegistryKey(DisabledStartupRegistryItems, allUsers : true))
             using(var currentUserShellDisabledReg = GetReadRegistryKey(DisabledStartupFolderItems, allUsers : false))
             using(var allUserShellDisabledReg = GetReadRegistryKey(DisabledStartupFolderItems, allUsers : true)) {
-                var currentUsers = currentUserDisabledReg.GetValueNames().Select(x => GetStartupState(currentUserDisabledReg, x));
-                var allUsers = allUserDisabledReg.GetValueNames().Select(x => GetStartupState(allUserDisabledReg, x));
-                var currentUsersShell = currentUserShellDisabledReg.GetValueNames().Select(x => GetStartupState(currentUserShellDisabledReg, x));
-                var allUsersShell = allUserShellDisabledReg.GetValueNames().Select(x => GetStartupState(allUserShellDisabledReg, x));
+                var currentUsers = currentUserDisabledReg?.GetValueNames().Select(x => GetStartupState(currentUserDisabledReg, x));
+                var allUsers = allUserDisabledReg?.GetValueNames().Select(x => GetStartupState(allUserDisabledReg, x));
+                var currentUsersShell = currentUserShellDisabledReg?.GetValueNames().Select(x => GetStartupState(currentUserShellDisabledReg, x));
+                var allUsersShell = allUserShellDisabledReg?.GetValueNames().Select(x => GetStartupState(allUserShellDisabledReg, x));
                 if (currentUsers != null) {
                     startupStates.AddRange(currentUsers);
                 }
@@ -163,10 +163,10 @@ namespace StartupManager.Services.Registries {
 
                     var startupValues = registry.GetValueNames();
                     var startupPrograms = startupValues.Select(name => {
-                        var path = registry.GetValue(name).ToString();
+                        var path = registry?.GetValue(name)?.ToString();
                         var disabled = startupStates.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && x.Disabled);
 
-                        return new StartupList(name, path, requireAdministrator : allUsers, disabled, StartupList.StartupType.Regedit, allUsers : allUsers, StartupRegistryPaths.First(x => registry.Name.Contains(x)), DisabledStartupRegistryItems, name);
+                        return new StartupList(name, path, requireAdministrator : allUsers, disabled, StartupList.StartupType.Regedit, allUsers : allUsers, StartupRegistryPaths.First(x => registry?.Name.Contains(x) == true), DisabledStartupRegistryItems, name);
                     }).Where(x => !string.IsNullOrWhiteSpace(x.Path)).ToList();
                     programs.AddRange(startupPrograms);
                 }
@@ -182,7 +182,7 @@ namespace StartupManager.Services.Registries {
             }
         }
 
-        private static RegistryKey GetReadRegistryKey(string registryPath, bool allUsers) {
+        private static RegistryKey? GetReadRegistryKey(string registryPath, bool allUsers) {
             if (allUsers) {
                 return Registry.LocalMachine.OpenSubKey(registryPath);
             } else {
@@ -196,7 +196,7 @@ namespace StartupManager.Services.Registries {
             }
         }
 
-        private static IEnumerable<RegistryKey> GetReadRegistryKeys(bool allUsers, params string[] registryKeys) {
+        private static IEnumerable<RegistryKey?> GetReadRegistryKeys(bool allUsers, params string[] registryKeys) {
             if (allUsers) {
                 return registryKeys.Select(x => Registry.LocalMachine.OpenSubKey(x));
             } else {

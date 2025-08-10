@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using StartupManager.Models;
 using StartupManager.Services.Directories;
 using StartupManager.Services.Registries;
@@ -35,7 +36,15 @@ namespace StartupManager.Commands.StartupList {
             } catch (UnauthorizedAccessException) {
                 messages.Add(new ConsoleColorOutput(WriteMode.Writeline, UnauthorizedMessage, ConsoleColor.Red));
             }
-            return (startupPrograms, messages);
+
+            var sortedAndIndexedPrograms = startupPrograms
+                .OrderBy(program => program.Name)
+                .Select((program, index) => {
+                    program.Index = index + 1; // Assigning index starting from 1
+                    return program;
+                })
+                .ToList();
+            return (sortedAndIndexedPrograms, messages);
         }
     }
 }

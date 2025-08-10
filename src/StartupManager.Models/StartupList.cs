@@ -12,6 +12,7 @@ namespace StartupManager.Models {
         public string DisabledRegistryPath { get; set; }
         public string RegistryName { get; set; }
         public StartupType Type { get; set; }
+        public int Index { get; set; }
 
         public StartupList(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers, string registryPath, string disabledRegistryPath, string registryName) {
             Path = path ?? string.Empty;

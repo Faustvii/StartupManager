@@ -16,9 +16,14 @@ namespace StartupManager.Commands.StartupToggle {
             var consoleMessages = new List<ConsoleColorOutput>();
             var toggleText = enable ? "enabled" : "disabled";
             var startupStates = RegistryService.GetStartupProgramStates();
-            var program = StartupQueryService.GetStartupByName(name, startupStates);
+            Models.StartupList? program = null;
+            if (int.TryParse(name, out int index)) {
+                program = StartupQueryService.GetStartupByIndex(index);
+            }
+            program ??= StartupQueryService.GetStartupByName(name, startupStates);
 
-            if (program == null) {
+            if (program == null)
+            {
                 return WriteProgramNotFoundConsoleOutput(name);
             }
 
@@ -62,7 +67,7 @@ namespace StartupManager.Commands.StartupToggle {
 
         private static IEnumerable<ConsoleColorOutput> WriteProgramNotFoundConsoleOutput(string name) {
             return new [] {
-                new ConsoleColorOutput(WriteMode.Write, "Could not find a program with name ", ConsoleColor.Red),
+                new ConsoleColorOutput(WriteMode.Write, "Could not find a program with name/index ", ConsoleColor.Red),
                     new ConsoleColorOutput(WriteMode.Writeline, name, ConsoleColor.Yellow),
             };
         }

@@ -73,7 +73,7 @@ Displays the current version of the application
 Examples of usage `StartupManager.exe --version`
 
 ```text
-1.6.2
+1.6.3
 ```
 
 ### List
@@ -98,16 +98,18 @@ Examples of usage `StartupManager.exe list --detailed` or `StartupManager.exe l 
 
 ```text
 Applications starting with windows:
-Name                         Admin  Enabled  Path
+#  Name                         Admin  Enabled  Path
 
-f.lux                               [√]      "C:\Users\Faust\Scoop\apps\flux\current\flux.exe" /noshow
-Steam                               [√]      "C:\Users\Faust\Scoop\apps\steam\current\steam.exe" -silent
-Discord                             [√]      C:\Users\Faust\scoop\apps\discord\current\Discord.exe --start-minimized
-SecurityHealth               [√]    [√]      C:\Windows\system32\SecurityHealthSystray.exe
+1  f.lux                               [√]      "C:\Users\Faust\Scoop\apps\flux\current\flux.exe" /noshow
+2  Steam                               [√]      "C:\Users\Faust\Scoop\apps\steam\current\steam.exe" -silent
+3  Discord                             [√]      C:\Users\Faust\scoop\apps\discord\current\Discord.exe --start-minimized
+4  SecurityHealth               [√]    [√]      C:\Windows\system32\SecurityHealthSystray.exe
 ```
 
 #### Columns explanation
 
+- `#`
+  - Numeric index used for referencing items in other commands (e.g., disabling or enabling).
 - `Name` is either the
   - Registry key name
   - Shortcut filename without extension
@@ -115,13 +117,13 @@ SecurityHealth               [√]    [√]      C:\Windows\system32\SecurityHea
 - `Admin`
   - Shows if you need to have administrator priviliges to modify it
 - `Enabled`
-  - Shows if the startup task is enabled or disabled
+  - Shows whether the startup item is currently enabled ([√]) or disabled (blank).
 - `Path`
   - Shows the path and potential arguments to the application
 
 ### Enable
 
-Examples of usage `StartupManager.exe enable Steam` or `StartupManager.exe e Steam`
+Examples of usage `StartupManager.exe enable Steam` or `StartupManager.exe e Steam` or `StartupManager.exe e 2` (Assuming index 2 is steam)
 
 ```text
 Steam is already enabled
@@ -135,7 +137,7 @@ Steam has been enabled
 
 ### Disable
 
-Examples of usage `StartupManager.exe disable Steam` or `StartupManager.exe d Steam`
+Examples of usage `StartupManager.exe disable Steam` or `StartupManager.exe d Steam` or `StartupManager.exe d 2` (Assuming index 2 is steam)
 
 ```text
 Steam has been disabled

@@ -8,14 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.4] - 2025-12-05
+
 ### Changed
 
 - Updated to .NET 10
-- Changed set-priority command alias from "sp" to "p" for consistency with other single-letter aliases
 
 ### Added
 
-- Added priority support for startup programs (ProcessPriority property)
+- Added priority support for startup programs (ProcessPriority property) implemented by [@AliRezaBeigy](https://github.com/AliRezaBeigy)
 
 ## [1.6.3] - 2025-08-10
 

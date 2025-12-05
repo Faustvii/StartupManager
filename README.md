@@ -30,7 +30,7 @@ I recommend installing through scoop to have the app accessible on your "path"
 
 ## Commands
 
-There are currently four functional commands `list`, `enable`, `disable`, `add`
+There are currently six functional commands `list`, `enable`, `disable`, `add`, `remove`, `set-priority`
 
 ### Help
 
@@ -49,6 +49,7 @@ Commands:
   e, enable <name>                    Enables one of the current startup programs
   a, add <name> <path> <arguments>    Adds a program to startup with windows
   r, remove <name>                    Removes the specified program from startup
+  p, set-priority <name> <priority>  Sets the priority of a Task Scheduler startup program
 ```
 
 The help command can also be used on any commands;
@@ -204,3 +205,19 @@ It's possible to skip the confirmation by adding the option `--confirm` or `-c`
 ```text
 MyWelcomeApp has been removed
 ```
+
+### Set-Priority
+
+This command allows you to set the priority level for Task Scheduler startup programs. The priority levels available are: Idle, BelowNormal, Normal, AboveNormal, High, or Realtime.
+
+Examples of usage
+
+`StartupManager set-priority MyWelcomeApp Normal` or `StartupManager p MyWelcomeApp Normal` would output
+
+```text
+Priority for MyWelcomeApp has been set to Normal
+```
+
+You can also use the index from the list command:
+
+`StartupManager p 1 High` would set the priority of the program at index 1 to High.

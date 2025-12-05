@@ -16,6 +16,7 @@ namespace StartupManager.Models {
             this.AllUsers = allUsers;
             this.Priority = ProcessPriority.Normal;
         }
+
         public StartupProgram(string name, FileInfo file, string arguments, bool administrator, bool allUsers, ProcessPriority priority) {
             this.Name = name;
             this.File = file;

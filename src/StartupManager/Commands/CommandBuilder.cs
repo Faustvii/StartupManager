@@ -104,7 +104,7 @@ namespace StartupManager.Commands {
                 Description = "Sets the priority of a Task Scheduler startup program"
             };
 
-            setPriorityCommand.AddAlias("sp");
+            setPriorityCommand.AddAlias("p");
 
             setPriorityCommand.AddArgument(new Argument<string>("name", description: "Name or index of the program to set priority for"));
             setPriorityCommand.AddArgument(new Argument<string>("priority", description: "Priority level: Idle, BelowNormal, Normal, AboveNormal, High, or Realtime"));

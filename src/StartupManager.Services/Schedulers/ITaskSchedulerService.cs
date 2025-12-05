@@ -11,5 +11,6 @@ namespace StartupManager.Services.Schedulers {
         StartupList? GetStartupByName(string name);
         StartupList? GetStartupByPredicate(Func<Task, bool> predicate);
         StateChange ToggleStartupState(StartupList program, bool enable);
+        StateChange SetPriority(StartupList program, ProcessPriority priority);
     }
 }

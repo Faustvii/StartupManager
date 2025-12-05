@@ -17,6 +17,7 @@ namespace StartupManager.ConsoleOutputters.ListOutput {
                 new Header<StartupList>("Name", x => x.Name, x => ConsoleColor.Yellow),
                 new Header<StartupList>("Admin", x => x.RequireAdministrator ? "[\u221A]" : string.Empty, x => ConsoleColor.Cyan),
                 new Header<StartupList>("Enabled", x => x.Disabled ? "[x]" : "[\u221A]", x => x.Disabled ? ConsoleColor.Red : ConsoleColor.DarkCyan),
+                new Header<StartupList>("Priority", x => x.Priority?.ToString() ?? "N/A", x => x.Priority.HasValue ? ConsoleColor.Magenta : ConsoleColor.DarkGray),
             };
 
             if (detailed) {

@@ -3,6 +3,7 @@ using System.CommandLine.Invocation;
 using System.IO;
 using StartupManager.Commands.Add;
 using StartupManager.Commands.Remove;
+using StartupManager.Commands.SetPriority;
 using StartupManager.Commands.StartupList;
 using StartupManager.Commands.StartupToggle;
 
@@ -13,7 +14,8 @@ namespace StartupManager.Commands {
             GetDisableStartupCommand(),
             GetEnableStartupCommand(),
             GetAddStartupCommand(),
-            GetRemoveStartupCommand()
+            GetRemoveStartupCommand(),
+            GetSetPriorityCommand()
         };
 
         private static Command GetStartupListCommand() {
@@ -44,8 +46,9 @@ namespace StartupManager.Commands {
             addCommand.AddArgument(new Argument<string?>("arguments", null) { Arity = ArgumentArity.ZeroOrOne });
             addCommand.AddArgument(new Argument<bool?>("admin", null) { Arity = ArgumentArity.ZeroOrOne });
             addCommand.AddArgument(new Argument<bool?>("allUsers", null) { Arity = ArgumentArity.ZeroOrOne });
+            addCommand.AddArgument(new Argument<string?>("priority", null) { Arity = ArgumentArity.ZeroOrOne });
 
-            addCommand.Handler = CommandHandler.Create<string?, FileInfo?, string?, bool?, bool?>(AddCommand.Run);
+            addCommand.Handler = CommandHandler.Create<string?, FileInfo?, string?, bool?, bool?, string?>(AddCommand.Run);
 
             return addCommand;
         }
@@ -94,6 +97,21 @@ namespace StartupManager.Commands {
             enableCommand.Handler = CommandHandler.Create<string>(EnableCommand.Run);
 
             return enableCommand;
+        }
+
+        private static Command GetSetPriorityCommand() {
+            var setPriorityCommand = new Command("set-priority") {
+                Description = "Sets the priority of a Task Scheduler startup program"
+            };
+
+            setPriorityCommand.AddAlias("sp");
+
+            setPriorityCommand.AddArgument(new Argument<string>("name", description: "Name or index of the program to set priority for"));
+            setPriorityCommand.AddArgument(new Argument<string>("priority", description: "Priority level: Idle, BelowNormal, Normal, AboveNormal, High, or Realtime"));
+
+            setPriorityCommand.Handler = CommandHandler.Create<string, string>(SetPriorityCommand.Run);
+
+            return setPriorityCommand;
         }
     }
 }

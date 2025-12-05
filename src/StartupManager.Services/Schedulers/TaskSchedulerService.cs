@@ -51,6 +51,27 @@ namespace StartupManager.Services.Schedulers {
             }
         }
 
+        public StateChange SetPriority(StartupList program, ProcessPriority priority) {
+            try {
+                using(var taskService = new TaskService()) {
+                    Func<Task, bool> namePredicate = x => x.Name.Equals(program.Name, StringComparison.OrdinalIgnoreCase) && x.Definition.Triggers.Any(x => x.TriggerType == TaskTriggerType.Logon);
+                    var task = GetTaskFromFolder(TaskService.Instance.RootFolder, namePredicate, GetFolderPredicate(false)) !;
+
+                    var currentPriority = ConvertPriorityFromTask(task.Definition.Settings.Priority);
+                    if (currentPriority == priority) {
+                        return StateChange.SameState;
+                    } else {
+                        var taskDef = task.Definition;
+                        taskDef.Settings.Priority = ConvertPriority(priority);
+                        taskService.RootFolder.RegisterTaskDefinition(task.Path, taskDef, TaskCreation.CreateOrUpdate, null, null, TaskLogonType.InteractiveToken);
+                        return StateChange.Success;
+                    }
+                }
+            } catch (UnauthorizedAccessException) {
+                return StateChange.Unauthorized;
+            }
+        }
+
         public Task AddProgramToStartup(StartupProgram program) {
             using(var taskService = new TaskService()) {
                 var currentUser = WindowsIdentityService.CurrentUser();
@@ -62,6 +83,7 @@ namespace StartupManager.Services.Schedulers {
                 taskDef.Settings.ExecutionTimeLimit = TimeSpan.Zero;
                 taskDef.Settings.StartWhenAvailable = true;
                 taskDef.Settings.StopIfGoingOnBatteries = false;
+                taskDef.Settings.Priority = ConvertPriority(program.Priority);
 
                 var action = taskDef.Actions.Add(program.File.FullName, program.Arguments, program.File.DirectoryName);
 
@@ -124,7 +146,8 @@ namespace StartupManager.Services.Schedulers {
                 requireAdministrator : true,
                 disabled: !task.Enabled,
                 type : StartupList.StartupType.TaskScheduler,
-                allUsers : task.Definition.Triggers.Where(t => t.TriggerType == TaskTriggerType.Logon).All(x => ((LogonTrigger) x).UserId != null));
+                allUsers : task.Definition.Triggers.Where(t => t.TriggerType == TaskTriggerType.Logon).All(x => ((LogonTrigger) x).UserId != null),
+                priority : ConvertPriorityFromTask(task.Definition.Settings.Priority));
         }
 
         public static List<StartupList> GetStartupTaskScheduler(bool includeWindows) {
@@ -147,6 +170,30 @@ namespace StartupManager.Services.Schedulers {
                 default:
                     return $"Unknown action type: '{action.ActionType}'";
             }
+        }
+
+        private static System.Diagnostics.ProcessPriorityClass ConvertPriority(ProcessPriority priority) {
+            return priority switch {
+                ProcessPriority.Idle => System.Diagnostics.ProcessPriorityClass.Idle,
+                ProcessPriority.BelowNormal => System.Diagnostics.ProcessPriorityClass.BelowNormal,
+                ProcessPriority.Normal => System.Diagnostics.ProcessPriorityClass.Normal,
+                ProcessPriority.AboveNormal => System.Diagnostics.ProcessPriorityClass.AboveNormal,
+                ProcessPriority.High => System.Diagnostics.ProcessPriorityClass.High,
+                ProcessPriority.Realtime => System.Diagnostics.ProcessPriorityClass.RealTime,
+                _ => System.Diagnostics.ProcessPriorityClass.Normal
+            };
+        }
+
+        private static ProcessPriority? ConvertPriorityFromTask(System.Diagnostics.ProcessPriorityClass taskPriority) {
+            return taskPriority switch {
+                System.Diagnostics.ProcessPriorityClass.Idle => ProcessPriority.Idle,
+                System.Diagnostics.ProcessPriorityClass.BelowNormal => ProcessPriority.BelowNormal,
+                System.Diagnostics.ProcessPriorityClass.Normal => ProcessPriority.Normal,
+                System.Diagnostics.ProcessPriorityClass.AboveNormal => ProcessPriority.AboveNormal,
+                System.Diagnostics.ProcessPriorityClass.High => ProcessPriority.High,
+                System.Diagnostics.ProcessPriorityClass.RealTime => ProcessPriority.Realtime,
+                _ => null
+            };
         }
     }
 }

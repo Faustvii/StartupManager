@@ -13,6 +13,7 @@ namespace StartupManager.Models {
         public string RegistryName { get; set; }
         public StartupType Type { get; set; }
         public int Index { get; set; }
+        public ProcessPriority? Priority { get; set; }
 
         public StartupList(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers, string registryPath, string disabledRegistryPath, string registryName) {
             Path = path ?? string.Empty;
@@ -25,6 +26,7 @@ namespace StartupManager.Models {
             RegistryPath = registryPath;
             DisabledRegistryPath = disabledRegistryPath;
             RegistryName = registryName;
+            Priority = null;
         }
 
         public StartupList(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers) {
@@ -38,6 +40,21 @@ namespace StartupManager.Models {
             RegistryPath = string.Empty;
             DisabledRegistryPath = string.Empty;
             RegistryName = string.Empty;
+            Priority = null;
+        }
+
+        public StartupList(string name, [AllowNull] string path, bool requireAdministrator, bool disabled, StartupType type, bool allUsers, ProcessPriority? priority) {
+            Path = path ?? string.Empty;
+            RequireAdministrator = requireAdministrator;
+            Disabled = disabled;
+            Type = type;
+            AllUsers = allUsers;
+            Name = name;
+
+            RegistryPath = string.Empty;
+            DisabledRegistryPath = string.Empty;
+            RegistryName = string.Empty;
+            Priority = priority;
         }
 
         private string ParseName(string name) {

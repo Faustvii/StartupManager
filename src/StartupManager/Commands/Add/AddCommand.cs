@@ -12,14 +12,15 @@ namespace StartupManager.Commands.Add {
         private static string ArgumentsId = "Arguments";
         private static string AdministratorId = "Administrator";
         private static string AllUserId = "All Users";
+        private static string PriorityId = "Priority";
 
-        public static void Run(string? name, FileInfo? path, string? arguments, bool? admin, bool? allUsers) {
-            if (name == null || (path == null || !path.Exists) || arguments == null || admin == null || allUsers == null) {
-                var steps = GetWizardSteps(name, path, arguments, admin, allUsers);
+        public static void Run(string? name, FileInfo? path, string? arguments, bool? admin, bool? allUsers, string? priority) {
+            if (name == null || (path == null || !path.Exists) || arguments == null || admin == null || allUsers == null || priority == null) {
+                var steps = GetWizardSteps(name, path, arguments, admin, allUsers, priority);
                 steps = ConsoleStepWizard.UserWizard("Let's guide you through settings up a new startup program", steps);
                 System.Console.WriteLine();
 
-                var startupProgram = ParseUserInfo(steps, name, path, arguments, admin, allUsers);
+                var startupProgram = ParseUserInfo(steps, name, path, arguments, admin, allUsers, priority);
                 ValidateInformationWithUser(startupProgram);
                 System.Console.WriteLine();
                 ConsoleColorHelper.ConsoleWriteColored(ConsoleColor.Green, "Does this look correct? y/n: ");
@@ -31,7 +32,7 @@ namespace StartupManager.Commands.Add {
                     System.Console.WriteLine("Sorry to hear that, please try again");
                 }
             } else {
-                var startupProgram = ParseUserInfo(new List<ConsoleStep>(), name, path, arguments, admin, allUsers);
+                var startupProgram = ParseUserInfo(new List<ConsoleStep>(), name, path, arguments, admin, allUsers, priority);
                 ExecuteHandler(startupProgram);
             }
         }
@@ -52,9 +53,11 @@ namespace StartupManager.Commands.Add {
             ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Green, $"{data.Administrator}");
             Console.Write($"{AllUserId}: ");
             ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Green, $"{data.AllUsers}");
+            Console.Write($"{PriorityId}: ");
+            ConsoleColorHelper.ConsoleWriteLineColored(ConsoleColor.Green, $"{data.Priority}");
         }
 
-        private static IEnumerable<ConsoleStep> GetWizardSteps(string? name, FileInfo? file, string? arguments, bool? admin, bool? allUsers) {
+        private static IEnumerable<ConsoleStep> GetWizardSteps(string? name, FileInfo? file, string? arguments, bool? admin, bool? allUsers, string? priority) {
             var steps = new List<ConsoleStep>();
             if (name == null || string.IsNullOrWhiteSpace(name)) {
                 steps.Add(new ConsoleStep(NameId, "What's the name of the program?: ", string.Empty));
@@ -71,10 +74,13 @@ namespace StartupManager.Commands.Add {
             if (allUsers == null) {
                 steps.Add(new ConsoleStep(AllUserId, "Do you want to run this program for all users? y/n: ", false));
             }
+            if (priority == null) {
+                steps.Add(new ConsoleStep(PriorityId, "What priority should this program run at? (Idle/BelowNormal/Normal/AboveNormal/High/Realtime) [Normal]: ", "Normal"));
+            }
             return steps;
         }
 
-        private static StartupProgram ParseUserInfo(IEnumerable<ConsoleStep> steps, string? name, FileInfo? file, string? arguments, bool? admin, bool? allUsers) {
+        private static StartupProgram ParseUserInfo(IEnumerable<ConsoleStep> steps, string? name, FileInfo? file, string? arguments, bool? admin, bool? allUsers, string? priority) {
             var nameVal = name ?? (string) steps.Single(x => x.Id == NameId).UserValue;
             var fileVal = file ?? (FileInfo) steps.Single(x => x.Id == PathId).UserValue;
             if (!fileVal.Exists) {
@@ -83,7 +89,16 @@ namespace StartupManager.Commands.Add {
             var argumentsVal = arguments ?? (string) steps.Single(x => x.Id == ArgumentsId).UserValue;
             var adminVal = admin ?? (bool) steps.Single(x => x.Id == AdministratorId).UserValue;
             var allUserVal = allUsers ?? (bool) steps.Single(x => x.Id == AllUserId).UserValue;
-            return new StartupProgram(nameVal, fileVal, argumentsVal, adminVal, allUserVal);
+            var priorityStr = priority ?? (string) steps.Single(x => x.Id == PriorityId).UserValue;
+            var priorityVal = ParsePriority(priorityStr);
+            return new StartupProgram(nameVal, fileVal, argumentsVal, adminVal, allUserVal, priorityVal);
+        }
+
+        private static ProcessPriority ParsePriority(string priority) {
+            if (Enum.TryParse<ProcessPriority>(priority, true, out var result)) {
+                return result;
+            }
+            return ProcessPriority.Normal;
         }
     }
 }
